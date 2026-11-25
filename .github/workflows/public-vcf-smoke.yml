@@ -24,7 +24,7 @@ jobs:
         shell: bash -el {0}
         run: |
           conda install -y -c conda-forge -c bioconda openpyxl
-          conda install -y -c https://raw.githubusercontent.com/yzzzzz7/donor-screen-conda/main -c conda-forge -c bioconda donor-screen=0.2.2
+          conda install -y -c https://raw.githubusercontent.com/yzzzzz7/donor-screen-conda/main -c conda-forge -c bioconda donor-screen=0.2.3
       - name: Run the packaged workflow and open all workbooks
         shell: bash -el {0}
         run: |
@@ -79,6 +79,36 @@ jobs:
           workbook.close()
           assert (out / "01_selection/missense-r.svg").exists()
           assert (out / "report.html").read_text().count("<svg ") == 5
+          PYTHON
+      - name: Run the original PLINK ROH method on observed example genotypes
+        shell: bash -el {0}
+        run: |
+          base="$RUNNER_TEMP/donor-example"
+          bcftools index "$base/fragment.vcf.gz"
+          bcftools query -l "$base/fragment.vcf.gz" > "$base/observed-samples.txt"
+          printf '22\t0\t51304566\n' > "$base/autosomes.bed"
+          donor-screen froh "$base/fragment.vcf.gz" "$base/observed-samples.txt" \
+            "$base/autosomes.bed" --chr-set 22 --out "$base/observed-roh"
+          python - <<'PYTHON'
+          import csv
+          import math
+          import os
+          from pathlib import Path
+          from openpyxl import load_workbook
+          out = Path(os.environ["RUNNER_TEMP"]) / "donor-example/observed-roh"
+          with (out / "froh.tsv").open() as f:
+              rows = list(csv.DictReader(f, delimiter="\t"))
+          assert len(rows) == 12
+          lines = (out / "roh.hom").read_text().splitlines()
+          segments = [dict(zip(lines[0].split(), line.split())) for line in lines[1:]]
+          for row in rows:
+              lengths = [float(s["KB"]) for s in segments if s["IID"] == row["sample"]]
+              assert int(row["reference_bp"]) == 51304566
+              assert math.isclose(float(row["FROH_100kb"]), sum(lengths) * 1000 / 51304566)
+              assert float(row["FROH_gt1Mb"]) == 0
+          book = load_workbook(out / "froh.xlsx", read_only=True)
+          assert len(list(book.active.values)) == 13
+          book.close()
           PYTHON
       - name: Show stage logs on failure
         if: failure()
