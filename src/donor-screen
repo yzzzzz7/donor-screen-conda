@@ -1,0 +1,205 @@
+#!/usr/bin/env python3
+"""Run the v0.2 donor screen with native KING, Beagle and RZooRoH."""
+import argparse
+import csv
+import gzip
+import hashlib
+import itertools
+import json
+import math
+import os
+from pathlib import Path
+import subprocess
+import shutil
+import sys
+
+from build_panel import build_panel, DIPLOID, MISSING
+
+
+def table(path, columns):
+    with path.open(encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f, delimiter="\t")
+        if not set(columns).issubset(reader.fieldnames or []):
+            raise ValueError(f"{path}: required columns {columns}")
+        yield from reader
+
+
+def vcf(path, expected):
+    with gzip.open(path, "rt") as f:
+        ids = None
+        for line in f:
+            if line.startswith("##"):
+                continue
+            fields = line.rstrip("\r\n").split("\t")
+            if line.startswith("#CHROM"):
+                ids = fields[9:]
+                if set(ids) != set(expected) or len(ids) != len(expected):
+                    raise ValueError(f"Unexpected VCF samples in {path}")
+                order = [ids.index(x) for x in expected]
+                continue
+            if ids is None or len(fields) != len(ids) + 9 or fields[8].split(":")[0] != "GT":
+                raise ValueError(f"Invalid GT-first VCF: {path}")
+            site = (fields[0], fields[1], fields[3], fields[4])
+            if site[2] not in "ACGT" or site[3] not in "ACGT" or len(site[2]) != 1 or len(site[3]) != 1 or site[2] == site[3]:
+                raise ValueError(f"Expected diploid biallelic SNP: {site}")
+            yield site, [fields[9+i].split(":")[0] for i in order]
+        if ids is None:
+            raise ValueError(f"Missing header: {path}")
+
+
+def run(args):
+    source, samples = args.vcf.resolve(strict=True), args.samples.resolve(strict=True)
+    out = args.out.resolve()
+    jar = args.beagle_jar.resolve(strict=True)
+    if args.threads < 1:
+        raise ValueError("--threads must be positive")
+    with samples.open(encoding="utf-8-sig") as f:
+        meta = {}
+        rows = []
+        for line in f:
+            if line.startswith("#"):
+                key, sep, value = line[1:].strip().partition("=")
+                if sep:
+                    if key in meta:
+                        raise ValueError(f"Duplicate sample-sheet setting: {key}")
+                    meta[key] = value.strip()
+            elif line.strip():
+                rows.append(line)
+        people = list(csv.DictReader(rows, delimiter="\t"))
+    ids = [p["sample"] for p in people]
+    if not ids or len(set(ids)) != len(ids) or any(not x or any(c.isspace() or c in ",<>" for c in x) for x in ids):
+        raise ValueError("Sample IDs must be unique and contain no whitespace or commas")
+    if any(p["role"] not in {"donor","recipient","reference"} for p in people):
+        raise ValueError("Roles: donor, recipient, reference")
+    rec = [p["sample"] for p in people if p["role"] == "recipient"]
+    don = [p["sample"] for p in people if p["role"] == "donor"]
+    n = args.offspring
+    kmax = args.max_donors or min(n,len(don))
+    if len(rec) < 2*n or not 1 <= kmax <= min(n,len(don)):
+        raise ValueError("Need two recipients per F1 for the no-introduction control and enough donors")
+    chroms = meta["autosomes"].split(",")
+    bp = int(meta["reference_bp"])
+    if not chroms or any(not c or any(x.isspace() for x in c) for c in chroms) or len(set(chroms)) != len(chroms) or bp < 1:
+        raise ValueError("Specify valid #autosomes and #reference_bp")
+    if args.king_vcf:
+        king = args.king_vcf.resolve(strict=True)
+    elif meta.get("king_panel") == "joint":
+        king = source
+    else:
+        raise ValueError("Provide --king-vcf with the adopted KING SNP panel or explicitly set #king_panel=joint")
+    for tool in ('bcftools', 'plink2', 'java', 'Rscript'):
+        if not shutil.which(tool):
+            raise ValueError(f'Required command not found in PATH: {tool}')
+    out.mkdir(exist_ok=False)
+    scripts = Path(__file__).resolve().parent
+    (out/"samples.txt").write_text("\n".join(ids)+"\n",encoding="utf-8")
+    def command(*tokens, label):
+        cmd = [str(x) for x in tokens]
+        with (out/(label+".log")).open("w",encoding="utf-8") as log:
+            print(json.dumps(cmd),file=log,flush=True)
+            subprocess.run(cmd,cwd=out,stdout=log,stderr=subprocess.STDOUT,check=True)
+    def subset(infile, dest):
+        command("bcftools","view","-S","samples.txt","-t",",".join(chroms),
+                "-Oz","-o",dest,infile,label=dest+".subset")
+    subset(source,"joint.vcf.gz")
+    subset(king,"king.vcf.gz")
+    joint = out/"joint.vcf.gz"
+    h = [0]*len(ids)
+    seen = set()
+    for site, genotypes in vcf(joint,ids):
+        seen.add(site[0])
+        for i, gt in enumerate(genotypes):
+            if gt in DIPLOID:
+                h[i] += DIPLOID[gt] == 1
+            elif gt not in MISSING:
+                raise ValueError(f"Invalid diploid genotype {gt}: {site}")
+    if set(chroms) != seen or max(h) > bp:
+        raise ValueError("Autosome list and reference length must match the analysis scope")
+    command("plink2","--vcf","king.vcf.gz","--double-id","--chr-set",95,"no-xy","no-mt",
+            "--allow-extra-chr","--make-king-table","--threads",args.threads,"--out","king",label="king.run")
+    parent = {x:x for x in ids}
+    def root(x):
+        while x != parent[x]:
+            x = parent[x]
+        return x
+    values = {}
+    with (out/"king.kin0").open() as f:
+        header = f.readline().lstrip("#").split()
+        for line in f:
+            data = dict(zip(header,line.split(),strict=True))
+            a,b = sorted((data.get("IID1", data.get("ID1")), data.get("IID2", data.get("ID2"))))
+            if a not in parent or b not in parent:
+                raise ValueError("Unrecognized KING sample ID")
+            value = float(data["KINSHIP"] if "KINSHIP" in data else data["Kinship"])
+            if a == b or (a,b) in values or not math.isfinite(value):
+                raise ValueError("Invalid KING pair")
+            values[a,b] = value
+            if value > .177:
+                ra,rb = sorted((root(a),root(b)))
+                parent[rb] = ra
+    if len(values) != len(ids)*(len(ids)-1)//2:
+        raise ValueError("Incomplete KING matrix")
+    command("java","-Xmx"+args.java_memory,"-jar",jar,"gt=joint.vcf.gz","out=phased",
+            "seed=50483",f"nthreads={args.threads}",label="beagle.run")
+    prefix = out/"hbd"
+    with (out/"hbd.haps").open("w") as hap, (out/"hbd.freq").open("w") as freq:
+        for original, phased in itertools.zip_longest(vcf(joint,ids), vcf(out/"phased.vcf.gz",ids)):
+            if original is None or phased is None or original[0] != phased[0]:
+                raise ValueError("Phasing changed the site panel")
+            (chrom,pos,ref,alt), raw = original
+            phases = phased[1]
+            known = [DIPLOID[x] for x in raw if x in DIPLOID]
+            if not known or any(gt not in {"0|0","0|1","1|0","1|1"} for gt in phases):
+                raise ValueError(f"Missing phased data or no observed alleles at {chrom}:{pos}")
+            if any(x in DIPLOID and DIPLOID[x] != DIPLOID[y] for x,y in zip(raw,phases)):
+                raise ValueError(f"Observed genotype changed at {chrom}:{pos}")
+            print(format(sum(known)/(2*len(known)),'.17g'),file=freq)
+            print(chrom,f"{chrom}:{pos}:{ref}:{alt}",pos,ref,alt,
+                  *(g for phase in phases for g in phase.split("|")),file=hap)
+    (out/"hbd.samples").write_text("".join(f"S{i:06d}\n" for i in range(1,len(ids)+1)))
+    indices = {x:i for i,x in enumerate(ids,1)}
+    pairs = sorted(tuple(sorted(p)) for p in itertools.chain(itertools.combinations(rec,2),itertools.product(rec,don)))
+    eligible = [p for p in pairs if values[p] <= .177]
+    if not eligible:
+        raise ValueError("No allowable pairs")
+    with (out/"hbd.pairs").open("w") as f:
+        print("i\tj",file=f)
+        for a,b in eligible:
+            print(*sorted((indices[a],indices[b])),sep="\t",file=f)
+    command("Rscript",scripts/"donor_hbd.R",prefix,label="hbd.run")
+    predicted = [float(x) for x in (out/"hbd.values").read_text().splitlines()]
+    if len(predicted) != len(eligible) or not all(0<=x<=1 for x in predicted):
+        raise ValueError("Incomplete or invalid HBD output")
+    hbd = dict(zip(eligible,predicted))
+    cfg = dict(cohort=out.name,offspring_count=n,max_donors=kmax,
+        individuals=[dict(sample=x,role="recipient" if x in rec else "candidate",cluster=root(x),h=h[indices[x]-1]/bp)
+                     for x in rec+don],
+        pairs=[dict(a=a,b=b,allowed=(a,b) in hbd,hbd=hbd.get((a,b),1.0)) for a,b in pairs],
+        reference_samples=ids,chromosomes=chroms,rare_file="rare.tsv.gz",het_file="het.tsv")
+    conf = out/"config.json"
+    conf.write_text(json.dumps(cfg,indent=2),encoding="utf-8")
+    build_panel(conf,joint)
+    command(sys.executable,scripts/"screen.py",conf,"results.json","--csv","results.csv",label="screen.run")
+    print(out/"results.csv")
+
+
+def main():
+    cli = argparse.ArgumentParser(description=__doc__)
+    cli.add_argument("vcf",type=Path)
+    cli.add_argument("samples",type=Path)
+    cli.add_argument("--out",type=Path,required=True)
+    cli.add_argument("--beagle-jar",type=Path,default=os.getenv("BEAGLE_JAR"),
+                     required=not os.getenv("BEAGLE_JAR"))
+    cli.add_argument("--king-vcf",type=Path)
+    cli.add_argument("--offspring",type=int,choices=(1,2,3),default=3)
+    cli.add_argument("--max-donors",type=int,choices=(1,2,3))
+    cli.add_argument("--threads",type=int,default=4)
+    cli.add_argument("--java-memory",default="16g")
+    try:
+        run(cli.parse_args())
+    except (OSError, ValueError, KeyError, subprocess.CalledProcessError) as err:
+        cli.exit(1,f"donor-screen: {err}\n")
+
+
+if __name__ == "__main__":
+    main()
