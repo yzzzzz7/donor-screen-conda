@@ -34,12 +34,6 @@ jobs:
           chmod +x "$GITHUB_WORKSPACE/src/donor-screen"
           export DONOR_SCREEN="$GITHUB_WORKSPACE/src/donor-screen"
           bash test/run.sh "$RUNNER_TEMP/donor-example"
-      - uses: actions/upload-artifact@v4
-        with:
-          name: public-vcf-fixture
-          path: |
-            ${{ runner.temp }}/donor-example/fragment.vcf.gz
-            ${{ runner.temp }}/donor-example/result/results.csv
       - name: Show stage logs on failure
         if: failure()
         shell: bash
