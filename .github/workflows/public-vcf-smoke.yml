@@ -24,7 +24,7 @@ jobs:
         shell: bash -el {0}
         run: |
           conda install -y -c conda-forge -c bioconda openpyxl
-          conda install -y -c https://raw.githubusercontent.com/yzzzzz7/donor-screen-conda/main -c conda-forge -c bioconda donor-screen=0.2.1=1
+          conda install -y -c https://raw.githubusercontent.com/yzzzzz7/donor-screen-conda/main -c conda-forge -c bioconda donor-screen=0.2.2
       - name: Run the packaged workflow and open all workbooks
         shell: bash -el {0}
         run: |
@@ -42,6 +42,43 @@ jobs:
               assert observed[0][0] == "Donor count"
               assert isinstance(observed[1][0], int)
               book.close()
+          PYTHON
+      - name: Test the optional fourth metric on synthetic annotations
+        shell: bash -el {0}
+        run: |
+          base="$RUNNER_TEMP/donor-example"
+          {
+            printf 'chrom\tpos\tref\talt\tmissense\n'
+            bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\n' "$base/fragment.vcf.gz" |
+              awk 'BEGIN {OFS="\t"} {print $0, NR % 2}'
+          } > "$base/synthetic-cds.tsv"
+          donor-screen "$base/fragment.vcf.gz" "$base/roles.tsv" --out "$base/r-result" \
+            --offspring 1 --threads 2 --java-memory 2g --cds-sites "$base/synthetic-cds.tsv"
+          python - <<'PYTHON'
+          import csv
+          import json
+          import math
+          import os
+          from pathlib import Path
+          from openpyxl import load_workbook
+          base = Path(os.environ["RUNNER_TEMP"]) / "donor-example"
+          out = base / "r-result"
+          original = json.loads((base / "result/results.json").read_text())
+          result = json.loads((out / "results.json").read_text())
+          assert result["cohort"]["missense_policy"] == "report"
+          assert [r["donors"] for r in result["results"]] == [r["donors"] for r in original["results"]]
+          with (out / "coding-pairs.tsv").open() as source:
+              counts = {frozenset((row["sample1"], row["sample2"])): float(row["expected_missense"]) / float(row["expected_cds"])
+                        for row in csv.DictReader(source, delimiter="\t")}
+          for row in result["results"]:
+              pair, = row["pairs"]
+              assert 0 < row["r"] < 1
+              assert math.isclose(row["r"], counts[frozenset((pair["parent1"], pair["parent2"]))])
+          workbook = load_workbook(out / "01_selection/results.xlsx", read_only=True)
+          assert "Predicted homozygous missense proportion R" in next(workbook.active.values)
+          workbook.close()
+          assert (out / "01_selection/missense-r.svg").exists()
+          assert (out / "report.html").read_text().count("<svg ") == 5
           PYTHON
       - name: Show stage logs on failure
         if: failure()
