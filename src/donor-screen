@@ -15,6 +15,7 @@ import sys
 
 from build_panel import build_panel, DIPLOID, MISSING
 from report import write_report
+from build_coding_pairs import build as build_coding_pairs, coding_panel
 
 
 def table(path, columns):
@@ -52,6 +53,11 @@ def run(args):
     source, samples = args.vcf.resolve(strict=True), args.samples.resolve(strict=True)
     out = args.out.resolve()
     jar = args.beagle_jar.resolve(strict=True)
+    if args.r_policy and not (args.cds_sites or args.cds_panel):
+        raise ValueError("--r-policy requires --cds-sites or --cds-panel")
+    annotation = (args.cds_sites or args.cds_panel)
+    if annotation is not None:
+        annotation = annotation.resolve(strict=True)
     if args.threads < 1:
         raise ValueError("--threads must be positive")
     with samples.open(encoding="utf-8-sig") as f:
@@ -178,7 +184,17 @@ def run(args):
         pairs=[dict(a=a,b=b,allowed=(a,b) in hbd,hbd=hbd.get((a,b),1.0)) for a,b in pairs],
         reference_samples=ids,chromosomes=chroms,rare_file="rare.tsv.gz",het_file="het.tsv")
     conf = out/"config.json"
+    if annotation is not None:
+        cfg.update(missense_file="coding-pairs.tsv", missense_policy=args.r_policy or "report")
     conf.write_text(json.dumps(cfg,indent=2),encoding="utf-8")
+    if annotation is not None:
+        panel = annotation
+        if args.cds_sites:
+            panel = out / "coding-sites.tsv"
+            observed = ((site, [DIPLOID.get(genotypes[indices[s] - 1]) for s in rec + don])
+                        for site, genotypes in vcf(joint, ids))
+            coding_panel(annotation, observed, rec + don, panel)
+        build_coding_pairs(panel, conf, out / "coding-pairs.tsv")
     build_panel(conf,joint)
     command(sys.executable,scripts/"screen.py",conf,"results.json","--csv","results.csv",label="screen.run")
     write_report(out)
@@ -194,6 +210,11 @@ def main():
     cli.add_argument("--beagle-jar",type=Path,default=os.getenv("BEAGLE_JAR"),
                      required=not os.getenv("BEAGLE_JAR"))
     cli.add_argument("--king-vcf",type=Path)
+    coding = cli.add_mutually_exclusive_group()
+    coding.add_argument("--cds-sites", type=Path, help="Curated, allele-matched CDS annotations (TSV or TSV.GZ)")
+    coding.add_argument("--cds-panel", type=Path, help="Curated CDS sites with recipient and donor ALT dosages")
+    cli.add_argument("--r-policy", choices=("report", "reference", "baseline"),
+                     help="Report R or apply the existing high-heterozygosity or no-introduction R limit")
     cli.add_argument("--offspring",type=int,choices=(1,2,3),default=3)
     cli.add_argument("--max-donors",type=int,choices=(1,2,3))
     cli.add_argument("--threads",type=int,default=4)

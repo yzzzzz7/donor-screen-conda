@@ -143,6 +143,16 @@ def write_report(out):
         ("02_pairings", "Selected pairings", PAIRS, pairs),
         ("03_combinations", "Candidate combinations", COMBINATIONS, data["alternatives"]),
     ]
+    if "missense_policy" in cohort:
+        extra = (
+            {"r": "Predicted homozygous missense proportion R", "reference_r": "Reference R",
+             "r_cap": "R limit", "r_policy": "R policy"},
+            {"r": "Predicted R", "expected_missense": "Expected homozygous missense count",
+             "expected_cds": "Expected homozygous CDS ALT count"},
+            {"r": "Predicted R", "r_cap": "R limit", "pass3": "Eligible before applying R"},
+        )
+        groups = [(folder, title, {**columns, **additions}, rows)
+                  for (folder, title, columns, rows), additions in zip(groups, extra)]
     for folder, _, columns, rows in groups:
         (out / folder).mkdir()
         write_xlsx(out / folder / "results.xlsx", columns, rows)
@@ -157,6 +167,9 @@ def write_report(out):
         ("03_combinations", "eligible-combinations.svg", "Candidate combinations", "eligible_count", "possible_count",
          ("Eligible", "Evaluated"), False),
     ]
+    if "missense_policy" in cohort:
+        plots.append(("01_selection", "missense-r.svg", "Predicted homozygous missense proportion R",
+                      "r", "reference_r", ("Selected plan", "High-heterozygosity reference"), True))
     graphics = {}
     for folder, filename, title, first, second, legend, percentage in plots:
         image = plot(title, results, first, second, legend, percentage)
@@ -167,6 +180,7 @@ def write_report(out):
     for folder, title, columns, rows in groups:
         if folder == "01_selection":
             keys = ("k", "donors", "rare", "het", "hbd", "reference_donors", "gain_over_reference")
+            keys += tuple(key for key in ("r", "reference_r", "r_cap") if key in columns)
             table = html_table({key: columns[key] for key in keys}, rows)
         elif folder == "02_pairings":
             table = html_table(columns, rows)
@@ -174,6 +188,16 @@ def write_report(out):
             table = f"<p>{len(rows):,} candidate combinations evaluated. The workbook lists each combination.</p>"
         sections.append(f'<section><h2>{title}</h2><p><a href="{folder}/results.xlsx">Download Excel</a></p>'
                         f'{table}{"".join(graphics[folder])}</section>')
+    method = ""
+    if "missense_policy" in cohort:
+        rule = {
+            "report": "R is reported alongside the three-metric choice.",
+            "reference": "R is capped at the high-heterozygosity reference plan.",
+            "baseline": "R is capped at the no-introduction control.",
+        }
+        method = ("<p>R is the mean across predicted offspring of the expected homozygous ALT "
+                  "missense count divided by the expected homozygous ALT CDS count. "
+                  + rule[cohort["missense_policy"]] + "</p>")
     page = f"""<!doctype html>
 <html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Donor-screen report</title>
@@ -189,6 +213,6 @@ svg{{display:block;width:100%;max-width:760px;margin:12px 0}} a{{color:#245d91}}
 <p>Heterozygosity and HBD are proportions in the tables and percentages in the plots.
 An em dash indicates an unavailable or inapplicable value. The control introduces zero donors.</p>
 <p><a href="results.csv">Original results CSV</a> · <a href="results.json">Original results JSON</a></p>
-{"".join(sections)}
+{method}{"".join(sections)}
 </html>"""
     (out / "report.html").write_text(page, encoding="utf-8")
