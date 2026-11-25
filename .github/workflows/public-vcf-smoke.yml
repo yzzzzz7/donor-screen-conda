@@ -24,7 +24,7 @@ jobs:
         shell: bash -el {0}
         run: |
           conda install -y -c conda-forge -c bioconda openpyxl
-          conda install -y -c https://raw.githubusercontent.com/yzzzzz7/donor-screen-conda/main -c conda-forge -c bioconda donor-screen=0.2.1
+          conda install -y -c https://raw.githubusercontent.com/yzzzzz7/donor-screen-conda/main -c conda-forge -c bioconda donor-screen=0.2.1=1
       - name: Run the packaged workflow and open all workbooks
         shell: bash -el {0}
         run: |
@@ -36,6 +36,7 @@ jobs:
           root = Path(os.environ["RUNNER_TEMP"]) / "donor-example/result"
           for folder, rows in (("01_selection", 2), ("02_pairings", 2), ("03_combinations", 3)):
               book = load_workbook(root / folder / "results.xlsx", read_only=True)
+              assert book.active["A1"].font.name == "Times New Roman"
               observed = list(book.active.values)
               assert len(observed) == rows + 1
               assert observed[0][0] == "Donor count"

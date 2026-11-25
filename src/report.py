@@ -31,6 +31,8 @@ def cell(value):
 
 def write_xlsx(path, columns, records):
     headers = tuple(columns.values())
+    widths = "".join(f'<col min="{i}" max="{i}" width="{min(44, max(16, len(title) + 2))}" customWidth="1"/>'
+                     for i, title in enumerate(headers, 1))
     rows = iter(records)
     names = []
     with ZipFile(path, "w", ZIP_DEFLATED) as book:
@@ -38,7 +40,7 @@ def write_xlsx(path, columns, records):
             index = len(names) + 1
             names.append(f'<sheet name="Results {index}" sheetId="{index}" r:id="rId{index}"/>')
             with book.open(f"xl/worksheets/sheet{index}.xml", "w") as sheet:
-                sheet.write(f'<worksheet xmlns="{XMLNS}"><sheetData>'.encode())
+                sheet.write(f'<worksheet xmlns="{XMLNS}"><cols>{widths}</cols><sheetData>'.encode())
                 sheet.write(("<row>" + "".join(map(cell, headers)) + "</row>").encode())
                 chunk = () if first is None else chain((first,), islice(rows, MAX_DATA_ROWS - 1))
                 for record in chunk:
@@ -53,11 +55,22 @@ def write_xlsx(path, columns, records):
         book.writestr("[Content_Types].xml", f'<Types xmlns="{PKG}/content-types">'
                       f'<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
                       f'<Default Extension="xml" ContentType="application/xml"/>'
-                      f'<Override PartName="/xl/workbook.xml" ContentType="{book_type}"/>{overrides}</Types>')
+                      f'<Override PartName="/xl/workbook.xml" ContentType="{book_type}"/>'
+                      f'<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>{overrides}</Types>')
         book.writestr("_rels/.rels", f'<Relationships xmlns="{PKG}/relationships"><Relationship Id="rId1" '
                       f'Type="{RELS}/officeDocument" Target="xl/workbook.xml"/></Relationships>')
         book.writestr("xl/workbook.xml", f'<workbook xmlns="{XMLNS}" xmlns:r="{RELS}"><sheets>{"".join(names)}</sheets></workbook>')
-        book.writestr("xl/_rels/workbook.xml.rels", f'<Relationships xmlns="{PKG}/relationships">{links}</Relationships>')
+        book.writestr("xl/_rels/workbook.xml.rels", f'<Relationships xmlns="{PKG}/relationships">{links}'
+                      f'<Relationship Id="styles" Type="{RELS}/styles" Target="styles.xml"/></Relationships>')
+        book.writestr("xl/styles.xml", f'<styleSheet xmlns="{XMLNS}">'
+                      '<fonts count="1"><font><sz val="11"/><color rgb="FF000000"/><name val="Times New Roman"/></font></fonts>'
+                      '<fills count="2"><fill><patternFill patternType="none"/></fill>'
+                      '<fill><patternFill patternType="gray125"/></fill></fills>'
+                      '<borders count="1"><border/></borders>'
+                      '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'
+                      '<cellXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/></cellXfs>'
+                      '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>'
+                      '</styleSheet>')
 
 
 SUMMARY = {
