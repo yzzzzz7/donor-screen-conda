@@ -43,3 +43,15 @@ roles.tsv 用制表符，示例：
 
 
 安装 R 包时可用 Rscript -e 'remotes::install_version("RZooRoH", version="0.4.3")'（先安装 remotes，必要时使用系统的编译工具）。
+
+## Output report
+
+Open `report.html` in a browser. It contains the summary, selected pairings, and four charts. Its Excel links work when the report stays alongside the numbered folders. The browser can print the report to PDF.
+
+| Folder | Contents |
+| --- | --- |
+| `01_selection/` | Selected plans and high-heterozygosity reference plans, with rare-allele and heterozygosity charts |
+| `02_pairings/` | Selected parents and predicted offspring metrics, with a recent-HBD chart |
+| `03_combinations/` | All candidate combinations and their eligibility, with a count chart |
+
+Each folder contains a `results.xlsx` workbook. The original `results.csv` and `results.json` remain in the run root. Tables store the original proportions; charts label heterozygosity and HBD as percentages.

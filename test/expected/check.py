@@ -13,3 +13,13 @@ with (run / "results.csv").open(newline="") as generated, (Path(__file__).with_n
     assert generated_csv.fieldnames == expected_csv.fieldnames
     assert len(list(generated_csv)) == len(list(expected_csv)) == 2
 print("Full pipeline smoke test passed")
+
+from zipfile import ZipFile
+from xml.etree import ElementTree
+for folder, count in (("01_selection", 2), ("02_pairings", 2), ("03_combinations", 3)):
+    with ZipFile(run / folder / "results.xlsx") as book:
+        assert book.testzip() is None
+        sheet = ElementTree.fromstring(book.read("xl/worksheets/sheet1.xml"))
+        assert len(sheet.find("{*}sheetData")) == count + 1
+assert len(list(run.glob("0*/*.svg"))) == 4
+assert (run / "report.html").read_text(encoding="utf-8").count("<svg ") == 4

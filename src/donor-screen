@@ -14,6 +14,7 @@ import shutil
 import sys
 
 from build_panel import build_panel, DIPLOID, MISSING
+from report import write_report
 
 
 def table(path, columns):
@@ -180,7 +181,9 @@ def run(args):
     conf.write_text(json.dumps(cfg,indent=2),encoding="utf-8")
     build_panel(conf,joint)
     command(sys.executable,scripts/"screen.py",conf,"results.json","--csv","results.csv",label="screen.run")
+    write_report(out)
     print(out/"results.csv")
+    print(out/"report.html")
 
 
 def main():
