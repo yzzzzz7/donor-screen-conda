@@ -10,7 +10,7 @@ donor-screen joint.vcf.gz roles.tsv --out run1
 
 Installation requires access to Conda channels, the Beagle author's site and CRAN.
 See [usage.md](usage.md) for the VCF and sample-sheet format.
-This is a test release. Native end-to-end Linux validation is pending.
+The native Linux workflow passed an [end-to-end smoke test](https://github.com/yzzzzz7/donor-screen-conda/actions/runs/45628034716) on the public example below (12 samples and 8,576 SNPs). This test runs the workflow from source; it is separate from Conda package validation.
 
 ## Public VCF example
 
