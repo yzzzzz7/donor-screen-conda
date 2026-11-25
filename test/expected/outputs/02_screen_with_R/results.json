@@ -1,0 +1,314 @@
+{
+  "version": "0.2",
+  "cohort": {
+    "name": "r-result",
+    "offspring_count": 1,
+    "het_sites": 8576,
+    "rare_sites": 111,
+    "candidates": [
+      "NA12812",
+      "NA12814",
+      "NA12815"
+    ],
+    "recipients": [
+      "NA06984",
+      "NA06986",
+      "NA07000",
+      "NA07048",
+      "NA07051",
+      "NA07347"
+    ],
+    "notes": [],
+    "missense_policy": "report"
+  },
+  "individuals": [
+    {
+      "sample": "NA06984",
+      "role": "recipient",
+      "cluster": "NA06984",
+      "h": 0.000583999416000584,
+      "novel_carried": 0
+    },
+    {
+      "sample": "NA06986",
+      "role": "recipient",
+      "cluster": "NA06986",
+      "h": 0.000446999553000447,
+      "novel_carried": 0
+    },
+    {
+      "sample": "NA07000",
+      "role": "recipient",
+      "cluster": "NA07000",
+      "h": 0.00045999954000046,
+      "novel_carried": 0
+    },
+    {
+      "sample": "NA07048",
+      "role": "recipient",
+      "cluster": "NA07048",
+      "h": 0.000561999438000562,
+      "novel_carried": 0
+    },
+    {
+      "sample": "NA07051",
+      "role": "recipient",
+      "cluster": "NA07051",
+      "h": 0.000493999506000494,
+      "novel_carried": 0
+    },
+    {
+      "sample": "NA07347",
+      "role": "recipient",
+      "cluster": "NA07347",
+      "h": 0.000678999321000679,
+      "novel_carried": 0
+    },
+    {
+      "sample": "NA12812",
+      "role": "candidate",
+      "cluster": "NA07357",
+      "h": 0.000655999344000656,
+      "novel_carried": 48
+    },
+    {
+      "sample": "NA12814",
+      "role": "candidate",
+      "cluster": "NA12814",
+      "h": 0.000435999564000436,
+      "novel_carried": 26
+    },
+    {
+      "sample": "NA12815",
+      "role": "candidate",
+      "cluster": "NA12815",
+      "h": 0.00052999947000053,
+      "novel_carried": 37
+    }
+  ],
+  "results": [
+    {
+      "k": 0,
+      "donors": [],
+      "rare": 0,
+      "cap": null,
+      "reference_donors": [],
+      "reason": "仅用受体繁殖，选出近期HBD最低的可行配对作为对照。",
+      "pairs": [
+        {
+          "parent1": "NA06986",
+          "parent2": "NA07000",
+          "n_offspring": 1,
+          "hbd": 1.3549973924662964e-09,
+          "het": 0.05054804104477612,
+          "r": 0.5144175317185697,
+          "expected_missense": 223.0,
+          "expected_cds": 433.5
+        }
+      ],
+      "hbd": 1.3549973924662964e-09,
+      "het": 0.05054804104477612,
+      "r": 0.5144175317185697,
+      "old_donors": [],
+      "old_pairs": [
+        {
+          "parent1": "NA06986",
+          "parent2": "NA07000",
+          "n_offspring": 1,
+          "hbd": 1.3549973924662964e-09,
+          "het": 0.05054804104477612,
+          "r": 0.5144175317185697,
+          "expected_missense": 223.0,
+          "expected_cds": 433.5
+        }
+      ],
+      "old_r": 0.5144175317185697,
+      "old_rare": 0,
+      "r_cap": null,
+      "r_policy": "report",
+      "change": "无引入对照，沿用相同配对。"
+    },
+    {
+      "k": 1,
+      "donors": [
+        "NA12812"
+      ],
+      "rare": 24.0,
+      "pairs": [
+        {
+          "parent1": "NA12812",
+          "parent2": "NA07051",
+          "n_offspring": 1,
+          "hbd": 4.395099874964011e-10,
+          "het": 0.07200326492537314,
+          "r": 0.5308291991495393,
+          "expected_missense": 187.25,
+          "expected_cds": 352.75
+        }
+      ],
+      "hbd": 4.395099874964011e-10,
+      "het": 0.07200326492537314,
+      "r": 0.5308291991495393,
+      "runner_up": [],
+      "runner_gap": null,
+      "gain_over_reference": 0.0,
+      "cap": 4.395099874964011e-10,
+      "eligible_count": 1,
+      "possible_count": 3,
+      "reference_donors": [
+        "NA12812"
+      ],
+      "reference_rare": 24.0,
+      "reference_het": 0.07200326492537314,
+      "reference_r": 0.5308291991495393,
+      "old_donors": [
+        "NA12812"
+      ],
+      "old_pairs": [
+        {
+          "parent1": "NA12812",
+          "parent2": "NA07051",
+          "n_offspring": 1,
+          "hbd": 4.395099874964011e-10,
+          "het": 0.07200326492537314,
+          "r": 0.5308291991495393,
+          "expected_missense": 187.25,
+          "expected_cds": 352.75
+        }
+      ],
+      "old_r": 0.5308291991495393,
+      "old_rare": 24.0,
+      "r_cap": null,
+      "r_policy": "report",
+      "change": "已计算R；未指定上限，四指标名次待定。",
+      "min_r_for_original_score": 0.5308291991495393,
+      "r_intervals": [
+        {
+          "min_cap": 0.5308291991495393,
+          "donors": [
+            "NA12812"
+          ],
+          "rare": 24.0
+        }
+      ],
+      "conditional": {
+        "reference": {
+          "k": 1,
+          "donors": [
+            "NA12812"
+          ],
+          "rare": 24.0,
+          "pairs": [
+            {
+              "parent1": "NA12812",
+              "parent2": "NA07051",
+              "n_offspring": 1,
+              "hbd": 4.395099874964011e-10,
+              "het": 0.07200326492537314,
+              "r": 0.5308291991495393,
+              "expected_missense": 187.25,
+              "expected_cds": 352.75
+            }
+          ],
+          "hbd": 4.395099874964011e-10,
+          "het": 0.07200326492537314,
+          "r": 0.5308291991495393,
+          "old_donors": [
+            "NA12812"
+          ],
+          "old_pairs": [
+            {
+              "parent1": "NA12812",
+              "parent2": "NA07051",
+              "n_offspring": 1,
+              "hbd": 4.395099874964011e-10,
+              "het": 0.07200326492537314,
+              "r": 0.5308291991495393,
+              "expected_missense": 187.25,
+              "expected_cds": 352.75
+            }
+          ],
+          "old_r": 0.5308291991495393,
+          "old_rare": 24.0,
+          "r_cap": 0.5308291991495393,
+          "r_policy": "reference",
+          "change": "原首选的R已达标，供体和配对均相同。"
+        },
+        "baseline": {
+          "k": 1,
+          "donors": [],
+          "pairs": [],
+          "r": null,
+          "hbd": null,
+          "het": null,
+          "rare": null,
+          "old_donors": [
+            "NA12812"
+          ],
+          "old_pairs": [
+            {
+              "parent1": "NA12812",
+              "parent2": "NA07051",
+              "n_offspring": 1,
+              "hbd": 4.395099874964011e-10,
+              "het": 0.07200326492537314,
+              "r": 0.5308291991495393,
+              "expected_missense": 187.25,
+              "expected_cds": 352.75
+            }
+          ],
+          "old_r": 0.5308291991495393,
+          "old_rare": 24.0,
+          "r_cap": 0.5144175317185697,
+          "r_policy": "baseline",
+          "change": "原方案的R超过上限，本名额没有同时达标的组合。"
+        }
+      },
+      "reason": "已计算R；未指定上限，四指标名次待定。"
+    }
+  ],
+  "alternatives": [
+    {
+      "k": 1,
+      "donors": [
+        "NA12812"
+      ],
+      "cap": 4.395099874964011e-10,
+      "pass": true,
+      "rare": 24.0,
+      "hbd": 4.395099874964011e-10,
+      "het": 0.07200326492537314,
+      "r_cap": null,
+      "pass3": true,
+      "r": 0.5308291991495393
+    },
+    {
+      "k": 1,
+      "donors": [
+        "NA12814"
+      ],
+      "cap": 4.395099874964011e-10,
+      "pass": false,
+      "rare": null,
+      "hbd": 5.591766068037682e-09,
+      "het": null,
+      "r_cap": null,
+      "pass3": false,
+      "r": null
+    },
+    {
+      "k": 1,
+      "donors": [
+        "NA12815"
+      ],
+      "cap": 4.395099874964011e-10,
+      "pass": false,
+      "rare": null,
+      "hbd": 1.3524071863144976e-09,
+      "het": null,
+      "r_cap": null,
+      "pass3": false,
+      "r": null
+    }
+  ]
+}

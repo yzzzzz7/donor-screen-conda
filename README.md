@@ -16,4 +16,4 @@ For sequenced parents or offspring, run `donor-screen froh --help` to measure to
 
 ## Public VCF example
 
-Run `bash test/run.sh test-run` from the repository root after installation. See [test files and instructions](test/README.md).
+Run `bash test/run.sh test-run` from the repository root after installation. View the [three example reports online](https://yzzzzz7.github.io/donor-screen-conda/). See [test files and instructions](test/README.md).
