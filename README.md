@@ -14,4 +14,4 @@ The native Linux workflow passed an [end-to-end smoke test](https://github.com/y
 
 ## Public VCF example
 
-Run `bash example-low-pass.sh example-run` after installation. This downloads a 1 Mb region on chromosome 22 at runtime from the public 1000 Genomes Phase 1 integrated callset (hg19). Phase 1 includes low-coverage whole-genome sequencing. The script uses 12 published sample IDs and arbitrary test roles and expects a successful one-offspring comparison. It demonstrates software execution; the short fragment is unsuitable for interpreting kinship or donor suitability. Genotype files remain in the run directory.
+Run `bash test/run.sh test-run` from the repository root after installation. See [test files and instructions](test/README.md).
