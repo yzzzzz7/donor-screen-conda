@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - test/**
+      - '!test/expected/outputs/**'
       - src/**
       - linux-64/**
       - .github/workflows/public-vcf-smoke.yml
@@ -110,6 +111,27 @@ jobs:
           assert len(list(book.active.values)) == 13
           book.close()
           PYTHON
+      - name: Collect the publication example
+        shell: bash -el {0}
+        run: |
+          base="$RUNNER_TEMP/donor-example"
+          bundle="$RUNNER_TEMP/public-example"
+          mkdir -p "$bundle/input" "$bundle/outputs"
+          cp "$base"/{synthetic-cds.tsv,observed-samples.txt,autosomes.bed} "$bundle/input/"
+          for pair in result:01_screen r-result:02_screen_with_R; do
+            source="$base/${pair%:*}"
+            dest="$bundle/outputs/${pair#*:}"
+            mkdir -p "$dest"
+            cp "$source"/{report.html,results.csv,results.json} "$dest/"
+            cp -r "$source"/0[123]_* "$dest/"
+          done
+          python test/observed-report.py "$base/observed-roh"
+          mkdir "$bundle/outputs/03_observed_froh"
+          cp "$base/observed-roh"/{report.html,froh.xlsx,froh.tsv,froh.svg,roh.hom} "$bundle/outputs/03_observed_froh/"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: public-example
+          path: ${{ runner.temp }}/public-example/
       - name: Show stage logs on failure
         if: failure()
         shell: bash
