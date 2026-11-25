@@ -13,15 +13,15 @@ cat > roles.tsv <<'EOF'
 #king_panel=joint
 sample	role
 NA06984	recipient
-NA06985	recipient
+NA06986	recipient
 NA07000	recipient
 NA07048	recipient
 NA07051	recipient
 NA07347	recipient
-NA12878	donor
-NA12891	donor
-NA12892	donor
-NA07346	reference
+NA12812	donor
+NA12814	donor
+NA12815	donor
+NA10847	reference
 NA07357	reference
 NA10851	reference
 EOF
