@@ -1,0 +1,45 @@
+name: Public VCF smoke test
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - example-low-pass.sh
+      - src/**
+      - .github/workflows/public-vcf-smoke.yml
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: donor-smoke
+          python-version: "3.11"
+          channels: conda-forge,bioconda
+          channel-priority: strict
+      - name: Install native tools
+        shell: bash -el {0}
+        run: |
+          conda install -y -c conda-forge -c bioconda bcftools plink2 openjdk=17 r-base r-foreach r-doparallel r-data.table r-rcolorbrewer r-iterators gcc_linux-64 gfortran_linux-64 make curl
+          cran=https://cran.r-project.org/src/contrib
+          curl -fLsS --retry 2 -o "$RUNNER_TEMP/RZooRoH_0.4.3.tar.gz" "$cran/RZooRoH_0.4.3.tar.gz" || curl -fLsS --retry 2 -o "$RUNNER_TEMP/RZooRoH_0.4.3.tar.gz" "$cran/Archive/RZooRoH/RZooRoH_0.4.3.tar.gz"
+          R CMD INSTALL --library="$CONDA_PREFIX/lib/R/library" "$RUNNER_TEMP/RZooRoH_0.4.3.tar.gz"
+          curl -fLsS --retry 2 -o "$RUNNER_TEMP/beagle.25Mar22.4f6.jar" https://faculty.washington.edu/browning/beagle/beagle.25Mar22.4f6.jar
+      - name: Run the workflow on an IGSR fragment
+        shell: bash -el {0}
+        run: |
+          export BEAGLE_JAR="$RUNNER_TEMP/beagle.25Mar22.4f6.jar"
+          chmod +x "$GITHUB_WORKSPACE/src/donor-screen"
+          export DONOR_SCREEN="$GITHUB_WORKSPACE/src/donor-screen"
+          bash example-low-pass.sh "$RUNNER_TEMP/donor-example"
+      - name: Show stage logs on failure
+        if: failure()
+        shell: bash
+        run: |
+          shopt -s nullglob
+          for f in "$RUNNER_TEMP"/donor-example/result/*.log; do
+            printf '\n=== %s ===\n' "$f"
+            tail -n 20 "$f"
+          done
