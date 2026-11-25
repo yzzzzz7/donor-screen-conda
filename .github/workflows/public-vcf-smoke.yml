@@ -6,6 +6,7 @@ on:
     paths:
       - test/**
       - src/**
+      - linux-64/**
       - .github/workflows/public-vcf-smoke.yml
 jobs:
   smoke:
@@ -19,21 +20,28 @@ jobs:
           python-version: "3.11"
           channels: conda-forge,bioconda
           channel-priority: strict
-      - name: Install native tools
+      - name: Install the public Conda build and workbook verifier
         shell: bash -el {0}
         run: |
-          conda install -y -c conda-forge -c bioconda bcftools plink2 openjdk=17 r-base r-foreach r-doparallel r-data.table r-rcolorbrewer r-iterators gcc_linux-64 gfortran_linux-64 make curl
-          cran=https://cran.r-project.org/src/contrib
-          curl -fLsS --retry 2 -o "$RUNNER_TEMP/RZooRoH_0.4.3.tar.gz" "$cran/RZooRoH_0.4.3.tar.gz" || curl -fLsS --retry 2 -o "$RUNNER_TEMP/RZooRoH_0.4.3.tar.gz" "$cran/Archive/RZooRoH/RZooRoH_0.4.3.tar.gz"
-          R CMD INSTALL --library="$CONDA_PREFIX/lib/R/library" "$RUNNER_TEMP/RZooRoH_0.4.3.tar.gz"
-          curl -fLsS --retry 2 -o "$RUNNER_TEMP/beagle.25Mar22.4f6.jar" https://faculty.washington.edu/browning/beagle/beagle.25Mar22.4f6.jar
-      - name: Run the workflow on an IGSR fragment
+          conda install -y -c conda-forge -c bioconda openpyxl
+          conda install -y -c https://raw.githubusercontent.com/yzzzzz7/donor-screen-conda/main -c conda-forge -c bioconda donor-screen=0.2.1
+      - name: Run the packaged workflow and open all workbooks
         shell: bash -el {0}
         run: |
-          export BEAGLE_JAR="$RUNNER_TEMP/beagle.25Mar22.4f6.jar"
-          chmod +x "$GITHUB_WORKSPACE/src/donor-screen"
-          export DONOR_SCREEN="$GITHUB_WORKSPACE/src/donor-screen"
           bash test/run.sh "$RUNNER_TEMP/donor-example"
+          python - <<'PYTHON'
+          import os
+          from pathlib import Path
+          from openpyxl import load_workbook
+          root = Path(os.environ["RUNNER_TEMP"]) / "donor-example/result"
+          for folder, rows in (("01_selection", 2), ("02_pairings", 2), ("03_combinations", 3)):
+              book = load_workbook(root / folder / "results.xlsx", read_only=True)
+              observed = list(book.active.values)
+              assert len(observed) == rows + 1
+              assert observed[0][0] == "Donor count"
+              assert isinstance(observed[1][0], int)
+              book.close()
+          PYTHON
       - name: Show stage logs on failure
         if: failure()
         shell: bash
