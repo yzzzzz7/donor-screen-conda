@@ -203,7 +203,7 @@ def run(args):
 
 
 def main():
-    cli = argparse.ArgumentParser(description=__doc__)
+    cli = argparse.ArgumentParser(description=__doc__, epilog="Run donor-screen froh --help for observed FROH.")
     cli.add_argument("vcf",type=Path)
     cli.add_argument("samples",type=Path)
     cli.add_argument("--out",type=Path,required=True)
@@ -226,4 +226,9 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    if sys.argv[1:2] == ["froh"]:
+        from observed_roh import main as observed_roh_main
+
+        observed_roh_main(sys.argv[2:])
+    else:
+        main()

@@ -65,3 +65,13 @@ donor-screen joint.vcf.gz roles.tsv --cds-sites coding.tsv --out run-r
 `--cds-sites` 接受 TSV 或 TSV.GZ，列名为 `chrom`、`pos`、`ref`、`alt`、`missense`。请提供分析范围内完整的、经人工或既定注释流程确认的 CDS SNP 面板，错义位点标 1，其他纳入分母的 CDS 位点标 0。坐标和两个等位基因必须与 VCF 一致。程序使用原始观测基因型的 ALT 剂量。若原分析有独立 CDS 面板，用 `--cds-panel` 传入同样五列加受体和供体各样本的 ALT 剂量列（0、1、2）。纳入位点缺失或配对分母为零时停止。
 
 每个后代的 R 为预期 ALT 纯合错义位点数除以预期 ALT 纯合 CDS 位点数，方案按后代取平均。默认 `--r-policy report` 计算并展示 R，保留原三指标入选方案。`--r-policy reference` 或 `baseline` 分别采用原筛选器内置的高杂合度对照或无引入对照 R 上限。R 写入 CSV、JSON、Excel 和 HTML 报告，附 R 对比图。
+
+## 实测个体的 FROH
+
+对已经测序的后代或亲本，提供经过质控、已建索引的 VCF、每行一个样本 ID 的文件和全常染色体 BED。BED 的每行须为染色体名、0、该染色体长度；坐标与 VCF 一致。`--chr-set` 为 PLINK 使用的常染色体数。
+
+```bash
+donor-screen froh offspring.vcf.gz offspring.txt autosomes.bed --chr-set 22 --out observed-roh
+```
+
+输出 `froh.xlsx`、`froh.tsv`、PLINK `roh.hom` 和运行日志。沿用研究的 PLINK 1.9 识别参数。总 FROH 为长度 ≥100 kb 的 ROH 总长除以 BED 染色体总长，长 FROH 采用严格 >1 Mb。未检出 ROH 的样本记为 0。比较亲本和后代时统一参考范围、VCF 过滤和 ROH 参数。此命令用于已测序个体，原供体筛选继续采用预测后代近期 HBD。
