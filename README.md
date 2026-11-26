@@ -22,15 +22,15 @@ After installing donor-screen 0.2.9, open a terminal in this repository's root a
 donor-screen test/input/fragment.vcf.gz test/input/roles.tsv --froh-bed test/input/autosomes.bed --cds-sites test/input/synthetic-cds.tsv --froh-chr-set 22 -k 2 -n 3 -r 50 -t 2 --java-memory 2g --out demo-two-donors
 ```
 
-The example evaluates exactly **2 donors** for **3 planned F1** and simulates **50 F1 per parental pair** to estimate FROH. All **18 recipient–donor pairs** have both FROH columns filled in the Excel workbook.
+### Complete pairwise results
 
-| Plan | Donors | Expected new rare alleles | F1 SNP heterozygosity | Recent HBD (proportion) | Total FROH | Long FROH (>1 Mb) | R |
-| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Selected | NA12812, NA12815 | 54.500 | 7.315% | 1.63e-09 | 0.486% | 0.000% | 52.582% |
-| High-heterozygosity reference | NA12812, NA12815 | 54.500 | 7.315% | 1.63e-09 | 0.486% | 0.000% | 52.582% |
-| No introduction | — | 0.000 | 6.347% | 2.97e-09 | 0.509% | 0.000% | 50.946% |
+**[Download the complete 18-pair Excel workbook](https://yzzzzz7.github.io/donor-screen-conda/04_two_donors/05_pairwise/results.xlsx)**
 
-[Open the English / Chinese report](https://yzzzzz7.github.io/donor-screen-conda/04_two_donors/report.html) · [Download the 18-pair Excel workbook](https://yzzzzz7.github.io/donor-screen-conda/04_two_donors/05_pairwise/results.xlsx) · [Download the plan comparison Excel workbook](https://yzzzzz7.github.io/donor-screen-conda/04_two_donors/04_predicted_froh/results.xlsx) · [View the Linux test run](https://github.com/yzzzzz7/donor-screen-conda/actions/runs/45806224958)
+This is the software-generated pairwise output at `demo-two-donors/05_pairwise/results.xlsx`. It contains all **6 recipients × 3 candidate donors = 18 pairs**. The first three columns are **KING kinship coefficient**, **Recipient**, and **Donor**. Both FROH columns contain predictions based on **50 simulated F1 per pair**.
+
+The `-k 2` and `-n 3` options set the plan to **2 donors and 3 F1 slots**. The pairwise workbook includes all candidate donors.
+
+[View the selected plan and controls in the bilingual report](https://yzzzzz7.github.io/donor-screen-conda/04_two_donors/report.html) · [View the Linux test run](https://github.com/yzzzzz7/donor-screen-conda/actions/runs/45806224958)
 
 This example uses a short public chr22 VCF fragment and synthetic CDS annotations. The results demonstrate the workflow.
 
