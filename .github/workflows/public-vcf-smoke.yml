@@ -50,10 +50,10 @@ jobs:
           base="$RUNNER_TEMP/donor-example"
           {
             printf 'chrom\tpos\tref\talt\tmissense\n'
-            bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\n' "$base/fragment.vcf.gz" |
+            bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\n' "$base/donor-recipient.vcf.gz" |
               awk 'BEGIN {OFS="\t"} {print $0, NR % 2}'
           } > "$base/synthetic-cds.tsv"
-          donor-screen "$base/fragment.vcf.gz" "$base/roles.tsv" --out "$base/r-result" \
+          donor-screen "$base/donor-recipient.vcf.gz" "$base/roles.tsv" --out "$base/r-result" \
             -n 1 -k 1 -t 2 --java-memory 2g --cds-sites "$base/synthetic-cds.tsv" \
             --froh-bed test/input/autosomes.bed --froh-chr-set 22 -r 16
           python - <<'PYTHON'
@@ -121,7 +121,7 @@ jobs:
       - name: Run the documented two-donor example
         shell: bash -el {0}
         run: |
-          donor-screen test/input/fragment.vcf.gz test/input/roles.tsv --froh-bed test/input/autosomes.bed --cds-sites test/input/synthetic-cds.tsv --froh-chr-set 22 -k 2 -n 3 -r 50 -t 2 --java-memory 2g --out demo-two-donors
+          donor-screen test/input/donor-recipient.vcf.gz test/input/roles.tsv --froh-bed test/input/autosomes.bed --cds-sites test/input/synthetic-cds.tsv --froh-chr-set 22 -k 2 -n 3 -r 50 -t 2 --java-memory 2g --out demo-two-donors
           python - <<'PYTHON'
           import csv
           import json
@@ -154,10 +154,10 @@ jobs:
         shell: bash -el {0}
         run: |
           base="$RUNNER_TEMP/donor-example"
-          bcftools index "$base/fragment.vcf.gz"
-          bcftools query -l "$base/fragment.vcf.gz" > "$base/observed-samples.txt"
+          bcftools index "$base/donor-recipient.vcf.gz"
+          bcftools query -l "$base/donor-recipient.vcf.gz" > "$base/observed-samples.txt"
           printf '22\t0\t51304566\n' > "$base/autosomes.bed"
-          donor-screen froh "$base/fragment.vcf.gz" "$base/observed-samples.txt" \
+          donor-screen froh "$base/donor-recipient.vcf.gz" "$base/observed-samples.txt" \
             "$base/autosomes.bed" --chr-set 22 --out "$base/observed-roh"
           python - <<'PYTHON'
           import csv

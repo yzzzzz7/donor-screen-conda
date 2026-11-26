@@ -19,7 +19,7 @@ Installation fetches PLINK, bcftools, Java and R dependencies, along with the re
 After installing donor-screen 0.2.9, open a terminal in this repository's root and copy the entire command. It uses the files in [test/input/](test/input/) and creates a new output directory named `demo-two-donors`.
 
 ```bash
-donor-screen test/input/fragment.vcf.gz test/input/roles.tsv --froh-bed test/input/autosomes.bed --cds-sites test/input/synthetic-cds.tsv --froh-chr-set 22 -k 2 -n 3 -r 50 -t 2 --java-memory 2g --out demo-two-donors
+donor-screen test/input/donor-recipient.vcf.gz test/input/roles.tsv --froh-bed test/input/autosomes.bed --cds-sites test/input/synthetic-cds.tsv --froh-chr-set 22 -k 2 -n 3 -r 50 -t 2 --java-memory 2g --out demo-two-donors
 ```
 
 ### Complete pairwise results

@@ -4,4 +4,6 @@ url=https://hgdownload.soe.ucsc.edu/gbdb/hg19/1000Genomes/ALL.chr22.integrated_p
 region=22:20000000-21000000
 here="$(cd -- "$(dirname -- "$0")" && pwd)"
 out="${1:?Usage: bash test/fetch-input.sh OUTPUT_VCF.gz}"
-bcftools view --no-version -r "$region" -S <(cut -f1 "$here/input/roles.tsv" | tail -n +5) -m2 -M2 -v snps -Oz -o "$out" "$url"
+names="$here/input/sample-names.tsv"
+bcftools view --no-version -r "$region" -S <(tail -n +2 "$names" | cut -f1) -m2 -M2 -v snps -Oz "$url" |
+  bcftools reheader --samples <(tail -n +2 "$names") --output "$out"
