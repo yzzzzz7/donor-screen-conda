@@ -25,7 +25,7 @@ jobs:
         shell: bash -el {0}
         run: |
           conda install -y -c conda-forge -c bioconda openpyxl
-          conda install -y -c https://raw.githubusercontent.com/yzzzzz7/donor-screen-conda/main -c conda-forge -c bioconda donor-screen=0.2.3
+          conda install -y -c https://raw.githubusercontent.com/yzzzzz7/donor-screen-conda/main -c conda-forge -c bioconda donor-screen=0.2.4
       - name: Run the packaged workflow and open all workbooks
         shell: bash -el {0}
         run: |
@@ -54,7 +54,8 @@ jobs:
               awk 'BEGIN {OFS="\t"} {print $0, NR % 2}'
           } > "$base/synthetic-cds.tsv"
           donor-screen "$base/fragment.vcf.gz" "$base/roles.tsv" --out "$base/r-result" \
-            --offspring 1 --threads 2 --java-memory 2g --cds-sites "$base/synthetic-cds.tsv"
+            --offspring 1 --threads 2 --java-memory 2g --cds-sites "$base/synthetic-cds.tsv" \
+            --froh-bed test/input/autosomes.bed --froh-chr-set 22 --froh-replicates 16
           python - <<'PYTHON'
           import csv
           import json
@@ -79,7 +80,17 @@ jobs:
           assert "Predicted homozygous missense proportion R" in next(workbook.active.values)
           workbook.close()
           assert (out / "01_selection/missense-r.svg").exists()
-          assert (out / "report.html").read_text().count("<svg ") == 5
+          page = (out / "report.html").read_text()
+          assert page.count("<svg ") == 5
+          assert "Predicted offspring FROH" in page
+          prediction = result["predicted_froh"]
+          assert prediction["replicates_per_pair"] == 16
+          assert {p["plan"] for p in prediction["plans"]} == {"No introduction", "Selected", "High-heterozygosity reference"}
+          assert all(p["total_high"] >= p["total_low"] >= 0 and p["long"] == 0 for p in prediction["plans"])
+          assert all(0 <= p["r"] <= 1 for p in prediction["plans"])
+          book = load_workbook(out / "04_predicted_froh/results.xlsx", read_only=True)
+          assert len(list(book.active.values)) == 4
+          book.close()
           PYTHON
       - name: Run the original PLINK ROH method on observed example genotypes
         shell: bash -el {0}
@@ -124,6 +135,9 @@ jobs:
             mkdir -p "$dest"
             cp "$source"/{report.html,results.csv,results.json} "$dest/"
             cp -r "$source"/0[123]_* "$dest/"
+            if [[ -d "$source/04_predicted_froh" ]]; then
+              cp -r "$source/04_predicted_froh" "$dest/"
+            fi
           done
           python test/observed-report.py "$base/observed-roh"
           mkdir "$bundle/outputs/03_observed_froh"
