@@ -16,4 +16,4 @@ Open `report.html` locally and use the **中文 / English** button to switch lan
 
 Each pairwise row includes the original signed KING kinship coefficient for the two parents. The run root also contains the complete native PLINK 2 `king.kin0` table. KING is included in PLINK 2; no separate KING installation is needed.
 
-The complete KING Excel workbook is at `06_king/results.xlsx`. Pairwise FROH columns are filled only for simulated matings. Blank cells denote a mating without a FROH simulation.
+KING is the first column of the pairwise workbook. FROH is shown for simulated pairings only; the example's selected plan and high-heterozygosity reference use the same donor–recipient pairing.

@@ -2,7 +2,6 @@
 import re
 
 ZH = {
-    "KING kinship":"KING 亲缘系数",
     "Donor-screen report":"供体筛选报告",
     "Run":"运行",
     "Selection summary":"筛选汇总",
