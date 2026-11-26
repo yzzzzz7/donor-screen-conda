@@ -180,6 +180,27 @@ jobs:
           assert len(list(book.active.values)) == 13
           book.close()
           PYTHON
+      - name: Run a synthetic donor-ranking contrast
+        shell: bash -el {0}
+        run: |
+          donor-screen test/input/synthetic-contrast.vcf.gz test/input/synthetic-contrast-roles.tsv --froh-bed test/input/synthetic-contrast.bed --cds-sites test/input/synthetic-contrast-cds.tsv --froh-chr-set 1 -k 2 -n 3 -r 50 -t 2 --java-memory 2g --out demo-synthetic-contrast
+          python - <<'PYTHON'
+          import json
+          from pathlib import Path
+          from openpyxl import load_workbook
+          out=Path("demo-synthetic-contrast")
+          data=json.loads((out / "results.json").read_text())
+          plan=data["results"][1]
+          print({key:plan.get(key) for key in ("donors","reference_donors","rare","reference_rare","hbd","cap")})
+          assert [x["k"] for x in data["results"]]==[0,2]
+          assert len(plan["donors"])==2 and len(plan["pairs"])==3
+          assert plan["donors"] != plan["reference_donors"]
+          assert plan["rare"] >= 1.25 * plan["reference_rare"] > 0
+          wb=load_workbook(out / "05_pairwise/results.xlsx", read_only=True)
+          header,*rows=list(wb.active.values)
+          assert len(rows)==18 and all(row[-1]==50 and row[header.index("Froh total (%)")] is not None and row[header.index("Froh long (>1 Mb) (%)")] is not None for row in rows)
+          wb.close()
+          PYTHON
       - name: Collect the publication example
         shell: bash -el {0}
         run: |
@@ -201,6 +222,10 @@ jobs:
           mkdir "$demo"
           cp demo-two-donors/{report.html,results.csv,results.json,king.kin0} "$demo/"
           cp -r demo-two-donors/0[12345]_* "$demo/"
+          demo="$bundle/outputs/05_synthetic_contrast"
+          mkdir "$demo"
+          cp demo-synthetic-contrast/{report.html,results.csv,results.json,king.kin0} "$demo/"
+          cp -r demo-synthetic-contrast/0[12345]_* "$demo/"
           python test/observed-report.py "$base/observed-roh"
           mkdir "$bundle/outputs/03_observed_froh"
           cp "$base/observed-roh"/{report.html,froh.xlsx,froh.tsv,froh.svg,roh.hom} "$bundle/outputs/03_observed_froh/"
@@ -213,7 +238,7 @@ jobs:
         shell: bash
         run: |
           shopt -s nullglob
-          for f in "$RUNNER_TEMP"/donor-example/result/*.log demo-two-donors/*.log; do
+          for f in "$RUNNER_TEMP"/donor-example/result/*.log demo-two-donors/*.log demo-synthetic-contrast/*.log; do
             printf '\n=== %s ===\n' "$f"
             tail -n 20 "$f"
           done
