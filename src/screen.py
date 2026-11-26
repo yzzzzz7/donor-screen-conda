@@ -116,6 +116,9 @@ def run(config_path, *, missense_policy=None):
     donors = sorted(s for s in info if info[s]["role"] == "candidate")
     recipients = sorted(s for s in info if info[s]["role"] == "recipient")
     n, kmax = cfg["offspring_count"],cfg["max_donors"]
+    exact = cfg.get("donor_count")
+    if exact is not None and (type(exact) is not int or not 1 <= exact <= kmax):
+        raise ValueError("Invalid exact donor count")
     if not 1 <= kmax <= n <= 3 or len(recipients) < 2*n or len(donors)<kmax:
         raise ValueError("v0.1 requires 1–3 F1, enough candidates and at least 2 recipients per F1")
     for s in donors:
@@ -161,7 +164,8 @@ def run(config_path, *, missense_policy=None):
         cohort["missense_policy"] = policy
     rows = [baseline]
     alternatives = []
-    for k in range(1,kmax+1):
+    donor_counts = (exact,) if exact is not None else range(1, kmax + 1)
+    for k in donor_counts:
         groups = list(combinations(donors,k))
         by_group = {}
         for group in groups:

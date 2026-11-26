@@ -89,7 +89,7 @@ def run(args):
     rec = [p["sample"] for p in people if p["role"] == "recipient"]
     don = [p["sample"] for p in people if p["role"] == "donor"]
     n = args.offspring
-    kmax = args.max_donors or min(n,len(don))
+    kmax = args.donors or args.max_donors or min(n,len(don))
     if len(rec) < 2*n or not 1 <= kmax <= min(n,len(don)):
         raise ValueError("Need two recipients per F1 for the no-introduction control and enough donors")
     chroms = meta["autosomes"].split(",")
@@ -194,6 +194,8 @@ def run(args):
     conf = out/"config.json"
     if annotation is not None:
         cfg.update(missense_file="coding-pairs.tsv", missense_policy=args.r_policy or "report")
+    if args.donors is not None:
+        cfg["donor_count"] = args.donors
     conf.write_text(json.dumps(cfg,indent=2),encoding="utf-8")
     if annotation is not None:
         panel = annotation
@@ -241,12 +243,18 @@ def main():
     cli.add_argument("--r-policy", choices=("report", "reference", "baseline"),
                      help="Report R or apply the existing high-heterozygosity or no-introduction R limit")
     cli.add_argument("--froh-bed", type=Path, help="Whole-autosome BED enabling predicted F1 FROH")
-    cli.add_argument("--froh-replicates", type=int, default=100, help="Simulated offspring per pair (default: 100)")
+    cli.add_argument("-r","--froh-replicates", type=int, default=100, help="Simulated offspring per pair (default: 100)")
     cli.add_argument("--froh-seed", type=int, default=50483, help="Reproducible FROH simulation seed")
     cli.add_argument("--froh-chr-set", type=int, default=95, help="PLINK autosome count for the VCF (default: 95)")
-    cli.add_argument("--offspring",type=int,choices=(1,2,3),default=3)
-    cli.add_argument("--max-donors",type=int,choices=(1,2,3))
-    cli.add_argument("--threads",type=int,default=4)
+    cli.add_argument("-n", "--offspring", type=int, choices=(1,2,3), default=3,
+                     help="F1 slots per plan (default: 3)")
+    quota = cli.add_mutually_exclusive_group()
+    quota.add_argument("-k", "--donors", type=int, choices=(1,2,3),
+                       help="Evaluate exactly this many donors, plus the no-introduction control")
+    quota.add_argument("--max-donors", type=int, choices=(1,2,3),
+                       help="Evaluate every donor count up to this number")
+    cli.add_argument("-t", "--threads", type=int, default=4,
+                     help="Threads for PLINK 2 KING and Beagle phasing (default: 4)")
     cli.add_argument("--java-memory",default="16g")
     try:
         run(cli.parse_args())

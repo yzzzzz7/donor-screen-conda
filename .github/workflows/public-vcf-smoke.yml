@@ -25,7 +25,7 @@ jobs:
         shell: bash -el {0}
         run: |
           conda install -y -c conda-forge -c bioconda openpyxl
-          conda install -y -c https://raw.githubusercontent.com/yzzzzz7/donor-screen-conda/main -c conda-forge -c bioconda donor-screen=0.2.8
+          conda install -y -c https://raw.githubusercontent.com/yzzzzz7/donor-screen-conda/main -c conda-forge -c bioconda donor-screen=0.2.9
       - name: Run the packaged workflow and open all workbooks
         shell: bash -el {0}
         run: |
@@ -54,8 +54,8 @@ jobs:
               awk 'BEGIN {OFS="\t"} {print $0, NR % 2}'
           } > "$base/synthetic-cds.tsv"
           donor-screen "$base/fragment.vcf.gz" "$base/roles.tsv" --out "$base/r-result" \
-            --offspring 1 --threads 2 --java-memory 2g --cds-sites "$base/synthetic-cds.tsv" \
-            --froh-bed test/input/autosomes.bed --froh-chr-set 22 --froh-replicates 16
+            -n 1 -k 1 -t 2 --java-memory 2g --cds-sites "$base/synthetic-cds.tsv" \
+            --froh-bed test/input/autosomes.bed --froh-chr-set 22 -r 16
           python - <<'PYTHON'
           import csv
           import json
@@ -117,6 +117,21 @@ jobs:
           book = load_workbook(out / "04_predicted_froh/results.xlsx", read_only=True)
           assert len(list(book.active.values)) == 4
           book.close()
+          PYTHON
+      - name: Verify an exact two-donor quota
+        shell: bash -el {0}
+        run: |
+          base="$RUNNER_TEMP/donor-example"
+          donor-screen "$base/fragment.vcf.gz" "$base/roles.tsv" -k 2 -n 3 -t 2 --java-memory 2g --out "$base/exact-two"
+          python - <<'PYTHON'
+          import json
+          import os
+          from pathlib import Path
+          root = Path(os.environ["RUNNER_TEMP"]) / "donor-example/exact-two"
+          data = json.loads((root / "results.json").read_text())
+          assert [row["k"] for row in data["results"]] == [0, 2]
+          assert all(row["k"] == 2 for row in data["alternatives"])
+          assert data["cohort"]["offspring_count"] == 3
           PYTHON
       - name: Run the original PLINK ROH method on observed example genotypes
         shell: bash -el {0}
