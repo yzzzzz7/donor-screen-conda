@@ -6,82 +6,82 @@
     "het_sites": 8576,
     "rare_sites": 111,
     "candidates": [
-      "NA12812",
-      "NA12814",
-      "NA12815"
+      "Donor_01",
+      "Donor_02",
+      "Donor_03"
     ],
     "recipients": [
-      "NA06984",
-      "NA06986",
-      "NA07000",
-      "NA07048",
-      "NA07051",
-      "NA07347"
+      "Recipient_01",
+      "Recipient_02",
+      "Recipient_03",
+      "Recipient_04",
+      "Recipient_05",
+      "Recipient_06"
     ],
     "notes": [],
     "missense_policy": "report"
   },
   "individuals": [
     {
-      "sample": "NA06984",
+      "sample": "Recipient_01",
       "role": "recipient",
-      "cluster": "NA06984",
+      "cluster": "Recipient_01",
       "h": 0.000583999416000584,
       "novel_carried": 0
     },
     {
-      "sample": "NA06986",
+      "sample": "Recipient_02",
       "role": "recipient",
-      "cluster": "NA06986",
+      "cluster": "Recipient_02",
       "h": 0.000446999553000447,
       "novel_carried": 0
     },
     {
-      "sample": "NA07000",
+      "sample": "Recipient_03",
       "role": "recipient",
-      "cluster": "NA07000",
+      "cluster": "Recipient_03",
       "h": 0.00045999954000046,
       "novel_carried": 0
     },
     {
-      "sample": "NA07048",
+      "sample": "Recipient_04",
       "role": "recipient",
-      "cluster": "NA07048",
+      "cluster": "Recipient_04",
       "h": 0.000561999438000562,
       "novel_carried": 0
     },
     {
-      "sample": "NA07051",
+      "sample": "Recipient_05",
       "role": "recipient",
-      "cluster": "NA07051",
+      "cluster": "Recipient_05",
       "h": 0.000493999506000494,
       "novel_carried": 0
     },
     {
-      "sample": "NA07347",
+      "sample": "Recipient_06",
       "role": "recipient",
-      "cluster": "NA07347",
+      "cluster": "Recipient_06",
       "h": 0.000678999321000679,
       "novel_carried": 0
     },
     {
-      "sample": "NA12812",
+      "sample": "Donor_01",
       "role": "candidate",
-      "cluster": "NA07357",
+      "cluster": "Donor_01",
       "h": 0.000655999344000656,
       "novel_carried": 48
     },
     {
-      "sample": "NA12814",
+      "sample": "Donor_02",
       "role": "candidate",
-      "cluster": "NA12814",
+      "cluster": "Donor_02",
       "h": 0.000435999564000436,
       "novel_carried": 26
     },
     {
-      "sample": "NA12815",
+      "sample": "Donor_03",
       "role": "candidate",
-      "cluster": "NA12815",
+      "cluster": "Donor_03",
       "h": 0.00052999947000053,
       "novel_carried": 37
     }
@@ -96,8 +96,8 @@
       "reason": "The no-introduction control uses the feasible recipient-only pairings with the lowest recent HBD.",
       "pairs": [
         {
-          "parent1": "NA06986",
-          "parent2": "NA07000",
+          "parent1": "Recipient_02",
+          "parent2": "Recipient_03",
           "n_offspring": 1,
           "hbd": 1.4580850047018966e-09,
           "het": 0.05054804104477612,
@@ -112,8 +112,8 @@
       "old_donors": [],
       "old_pairs": [
         {
-          "parent1": "NA06986",
-          "parent2": "NA07000",
+          "parent1": "Recipient_02",
+          "parent2": "Recipient_03",
           "n_offspring": 1,
           "hbd": 1.4580850047018966e-09,
           "het": 0.05054804104477612,
@@ -131,13 +131,13 @@
     {
       "k": 1,
       "donors": [
-        "NA12812"
+        "Donor_01"
       ],
       "rare": 24.0,
       "pairs": [
         {
-          "parent1": "NA12812",
-          "parent2": "NA07051",
+          "parent1": "Donor_01",
+          "parent2": "Recipient_05",
           "n_offspring": 1,
           "hbd": 4.410641934867046e-10,
           "het": 0.07200326492537314,
@@ -156,12 +156,12 @@
       "eligible_count": 1,
       "possible_count": 3,
       "reference_donors": [
-        "NA12812"
+        "Donor_01"
       ],
       "reference_pairs": [
         {
-          "parent1": "NA12812",
-          "parent2": "NA07051",
+          "parent1": "Donor_01",
+          "parent2": "Recipient_05",
           "n_offspring": 1,
           "hbd": 4.410641934867046e-10,
           "het": 0.07200326492537314,
@@ -174,12 +174,12 @@
       "reference_het": 0.07200326492537314,
       "reference_r": 0.5308291991495393,
       "old_donors": [
-        "NA12812"
+        "Donor_01"
       ],
       "old_pairs": [
         {
-          "parent1": "NA12812",
-          "parent2": "NA07051",
+          "parent1": "Donor_01",
+          "parent2": "Recipient_05",
           "n_offspring": 1,
           "hbd": 4.410641934867046e-10,
           "het": 0.07200326492537314,
@@ -198,7 +198,7 @@
         {
           "min_cap": 0.5308291991495393,
           "donors": [
-            "NA12812"
+            "Donor_01"
           ],
           "rare": 24.0
         }
@@ -207,13 +207,13 @@
         "reference": {
           "k": 1,
           "donors": [
-            "NA12812"
+            "Donor_01"
           ],
           "rare": 24.0,
           "pairs": [
             {
-              "parent1": "NA12812",
-              "parent2": "NA07051",
+              "parent1": "Donor_01",
+              "parent2": "Recipient_05",
               "n_offspring": 1,
               "hbd": 4.410641934867046e-10,
               "het": 0.07200326492537314,
@@ -226,12 +226,12 @@
           "het": 0.07200326492537314,
           "r": 0.5308291991495393,
           "old_donors": [
-            "NA12812"
+            "Donor_01"
           ],
           "old_pairs": [
             {
-              "parent1": "NA12812",
-              "parent2": "NA07051",
+              "parent1": "Donor_01",
+              "parent2": "Recipient_05",
               "n_offspring": 1,
               "hbd": 4.410641934867046e-10,
               "het": 0.07200326492537314,
@@ -255,12 +255,12 @@
           "het": null,
           "rare": null,
           "old_donors": [
-            "NA12812"
+            "Donor_01"
           ],
           "old_pairs": [
             {
-              "parent1": "NA12812",
-              "parent2": "NA07051",
+              "parent1": "Donor_01",
+              "parent2": "Recipient_05",
               "n_offspring": 1,
               "hbd": 4.410641934867046e-10,
               "het": 0.07200326492537314,
@@ -283,7 +283,7 @@
     {
       "k": 1,
       "donors": [
-        "NA12812"
+        "Donor_01"
       ],
       "cap": 4.410641934867046e-10,
       "pass": true,
@@ -297,7 +297,7 @@
     {
       "k": 1,
       "donors": [
-        "NA12814"
+        "Donor_02"
       ],
       "cap": 4.410641934867046e-10,
       "pass": false,
@@ -311,7 +311,7 @@
     {
       "k": 1,
       "donors": [
-        "NA12815"
+        "Donor_03"
       ],
       "cap": 4.410641934867046e-10,
       "pass": false,
@@ -325,8 +325,8 @@
   ],
   "pairwise": [
     {
-      "recipient": "NA06984",
-      "donor": "NA12812",
+      "recipient": "Recipient_01",
+      "donor": "Donor_01",
       "het": 0.0748017723880597,
       "rare": 24.0,
       "hbd": 2.3099240636053024e-09,
@@ -335,8 +335,8 @@
       "allowed": true
     },
     {
-      "recipient": "NA06984",
-      "donor": "NA12814",
+      "recipient": "Recipient_01",
+      "donor": "Donor_02",
       "het": 0.06856343283582089,
       "rare": 13.0,
       "hbd": 1.0363610979295497e-08,
@@ -345,8 +345,8 @@
       "allowed": true
     },
     {
-      "recipient": "NA06984",
-      "donor": "NA12815",
+      "recipient": "Recipient_01",
+      "donor": "Donor_03",
       "het": 0.061916977611940295,
       "rare": 18.5,
       "hbd": 1.2943551556581256e-08,
@@ -355,8 +355,8 @@
       "allowed": true
     },
     {
-      "recipient": "NA06986",
-      "donor": "NA12812",
+      "recipient": "Recipient_02",
+      "donor": "Donor_01",
       "het": 0.07311100746268656,
       "rare": 24.0,
       "hbd": 8.89947556552072e-09,
@@ -365,8 +365,8 @@
       "allowed": true
     },
     {
-      "recipient": "NA06986",
-      "donor": "NA12814",
+      "recipient": "Recipient_02",
+      "donor": "Donor_02",
       "het": 0.06937966417910447,
       "rare": 13.0,
       "hbd": 1.2246944570821196e-07,
@@ -375,8 +375,8 @@
       "allowed": true
     },
     {
-      "recipient": "NA06986",
-      "donor": "NA12815",
+      "recipient": "Recipient_02",
+      "donor": "Donor_03",
       "het": 0.06477378731343283,
       "rare": 18.5,
       "hbd": 5.0302575952010694e-08,
@@ -385,8 +385,8 @@
       "allowed": true
     },
     {
-      "recipient": "NA07000",
-      "donor": "NA12812",
+      "recipient": "Recipient_03",
+      "donor": "Donor_01",
       "het": 0.08331389925373134,
       "rare": 24.0,
       "hbd": 1.5293753833570108e-09,
@@ -395,8 +395,8 @@
       "allowed": true
     },
     {
-      "recipient": "NA07000",
-      "donor": "NA12814",
+      "recipient": "Recipient_03",
+      "donor": "Donor_02",
       "het": 0.07853311567164178,
       "rare": 13.0,
       "hbd": 3.207822734395843e-08,
@@ -405,8 +405,8 @@
       "allowed": true
     },
     {
-      "recipient": "NA07000",
-      "donor": "NA12815",
+      "recipient": "Recipient_03",
+      "donor": "Donor_03",
       "het": 0.05288013059701493,
       "rare": 18.5,
       "hbd": 1.1723018136216061e-08,
@@ -415,8 +415,8 @@
       "allowed": true
     },
     {
-      "recipient": "NA07048",
-      "donor": "NA12812",
+      "recipient": "Recipient_04",
+      "donor": "Donor_01",
       "het": 0.06733908582089553,
       "rare": 24.0,
       "hbd": 1.0024133742670764e-07,
@@ -425,8 +425,8 @@
       "allowed": true
     },
     {
-      "recipient": "NA07048",
-      "donor": "NA12814",
+      "recipient": "Recipient_04",
+      "donor": "Donor_02",
       "het": 0.07147854477611941,
       "rare": 13.0,
       "hbd": 5.585999586791344e-09,
@@ -435,8 +435,8 @@
       "allowed": true
     },
     {
-      "recipient": "NA07048",
-      "donor": "NA12815",
+      "recipient": "Recipient_04",
+      "donor": "Donor_03",
       "het": 0.06413246268656717,
       "rare": 18.5,
       "hbd": 2.9413017450710838e-09,
@@ -445,8 +445,8 @@
       "allowed": true
     },
     {
-      "recipient": "NA07051",
-      "donor": "NA12812",
+      "recipient": "Recipient_05",
+      "donor": "Donor_01",
       "het": 0.07200326492537314,
       "rare": 24.0,
       "hbd": 4.410641934867046e-10,
@@ -455,8 +455,8 @@
       "allowed": true
     },
     {
-      "recipient": "NA07051",
-      "donor": "NA12814",
+      "recipient": "Recipient_05",
+      "donor": "Donor_02",
       "het": 0.07386893656716417,
       "rare": 13.0,
       "hbd": 1.153907377474422e-08,
@@ -465,8 +465,8 @@
       "allowed": true
     },
     {
-      "recipient": "NA07051",
-      "donor": "NA12815",
+      "recipient": "Recipient_05",
+      "donor": "Donor_03",
       "het": 0.07550139925373134,
       "rare": 18.5,
       "hbd": 1.352732473772698e-09,
@@ -475,8 +475,8 @@
       "allowed": true
     },
     {
-      "recipient": "NA07347",
-      "donor": "NA12812",
+      "recipient": "Recipient_06",
+      "donor": "Donor_01",
       "het": 0.07147854477611941,
       "rare": 24.0,
       "hbd": 5.4152833311724964e-08,
@@ -485,8 +485,8 @@
       "allowed": true
     },
     {
-      "recipient": "NA07347",
-      "donor": "NA12814",
+      "recipient": "Recipient_06",
+      "donor": "Donor_02",
       "het": 0.07590951492537314,
       "rare": 13.0,
       "hbd": 3.6171584368198037e-08,
@@ -495,8 +495,8 @@
       "allowed": true
     },
     {
-      "recipient": "NA07347",
-      "donor": "NA12815",
+      "recipient": "Recipient_06",
+      "donor": "Donor_03",
       "het": 0.06489039179104478,
       "rare": 18.5,
       "hbd": 1.6583387176953833e-08,
@@ -525,8 +525,8 @@
         "reason": "The no-introduction control uses the feasible recipient-only pairings with the lowest recent HBD.",
         "pairs": [
           {
-            "parent1": "NA06986",
-            "parent2": "NA07000",
+            "parent1": "Recipient_02",
+            "parent2": "Recipient_03",
             "n_offspring": 1,
             "hbd": 1.4580850047018966e-09,
             "het": 0.05054804104477612,
@@ -541,8 +541,8 @@
         "old_donors": [],
         "old_pairs": [
           {
-            "parent1": "NA06986",
-            "parent2": "NA07000",
+            "parent1": "Recipient_02",
+            "parent2": "Recipient_03",
             "n_offspring": 1,
             "hbd": 1.4580850047018966e-09,
             "het": 0.05054804104477612,
@@ -557,23 +557,23 @@
         "r_policy": "report",
         "change": "The no-introduction control uses the same pairings.",
         "plan": "No introduction",
-        "total": 0.0072000962350992305,
+        "total": 0.007923629545955033,
         "long": 0.0,
         "total_low": 0.0059418882911903,
-        "total_high": 0.009297946794833038,
+        "total_high": 0.010369349971696477,
         "long_low": 0.0,
         "long_high": 0.0
       },
       {
         "k": 1,
         "donors": [
-          "NA12812"
+          "Donor_01"
         ],
         "rare": 24.0,
         "pairs": [
           {
-            "parent1": "NA12812",
-            "parent2": "NA07051",
+            "parent1": "Donor_01",
+            "parent2": "Recipient_05",
             "n_offspring": 1,
             "hbd": 4.410641934867046e-10,
             "het": 0.07200326492537314,
@@ -592,12 +592,12 @@
         "eligible_count": 1,
         "possible_count": 3,
         "reference_donors": [
-          "NA12812"
+          "Donor_01"
         ],
         "reference_pairs": [
           {
-            "parent1": "NA12812",
-            "parent2": "NA07051",
+            "parent1": "Donor_01",
+            "parent2": "Recipient_05",
             "n_offspring": 1,
             "hbd": 4.410641934867046e-10,
             "het": 0.07200326492537314,
@@ -610,12 +610,12 @@
         "reference_het": 0.07200326492537314,
         "reference_r": 0.5308291991495393,
         "old_donors": [
-          "NA12812"
+          "Donor_01"
         ],
         "old_pairs": [
           {
-            "parent1": "NA12812",
-            "parent2": "NA07051",
+            "parent1": "Donor_01",
+            "parent2": "Recipient_05",
             "n_offspring": 1,
             "hbd": 4.410641934867046e-10,
             "het": 0.07200326492537314,
@@ -634,7 +634,7 @@
           {
             "min_cap": 0.5308291991495393,
             "donors": [
-              "NA12812"
+              "Donor_01"
             ],
             "rare": 24.0
           }
@@ -643,13 +643,13 @@
           "reference": {
             "k": 1,
             "donors": [
-              "NA12812"
+              "Donor_01"
             ],
             "rare": 24.0,
             "pairs": [
               {
-                "parent1": "NA12812",
-                "parent2": "NA07051",
+                "parent1": "Donor_01",
+                "parent2": "Recipient_05",
                 "n_offspring": 1,
                 "hbd": 4.410641934867046e-10,
                 "het": 0.07200326492537314,
@@ -662,12 +662,12 @@
             "het": 0.07200326492537314,
             "r": 0.5308291991495393,
             "old_donors": [
-              "NA12812"
+              "Donor_01"
             ],
             "old_pairs": [
               {
-                "parent1": "NA12812",
-                "parent2": "NA07051",
+                "parent1": "Donor_01",
+                "parent2": "Recipient_05",
                 "n_offspring": 1,
                 "hbd": 4.410641934867046e-10,
                 "het": 0.07200326492537314,
@@ -691,12 +691,12 @@
             "het": null,
             "rare": null,
             "old_donors": [
-              "NA12812"
+              "Donor_01"
             ],
             "old_pairs": [
               {
-                "parent1": "NA12812",
-                "parent2": "NA07051",
+                "parent1": "Donor_01",
+                "parent2": "Recipient_05",
                 "n_offspring": 1,
                 "hbd": 4.410641934867046e-10,
                 "het": 0.07200326492537314,
@@ -714,9 +714,9 @@
         },
         "reason": "R is reported alongside the original ranking.",
         "plan": "Selected",
-        "total": 0.004286056137771441,
+        "total": 0.00738902922402657,
         "long": 0.0,
-        "total_low": 0.0,
+        "total_low": 0.004072471346897272,
         "total_high": 0.00790783416821029,
         "long_low": 0.0,
         "long_high": 0.0
@@ -725,12 +725,12 @@
         "plan": "High-heterozygosity reference",
         "k": 1,
         "donors": [
-          "NA12812"
+          "Donor_01"
         ],
         "pairs": [
           {
-            "parent1": "NA12812",
-            "parent2": "NA07051",
+            "parent1": "Donor_01",
+            "parent2": "Recipient_05",
             "n_offspring": 1,
             "hbd": 4.410641934867046e-10,
             "het": 0.07200326492537314,
@@ -743,9 +743,9 @@
         "het": 0.07200326492537314,
         "hbd": 4.410641934867046e-10,
         "r": 0.5308291991495393,
-        "total": 0.004286056137771441,
+        "total": 0.00738902922402657,
         "long": 0.0,
-        "total_low": 0.0,
+        "total_low": 0.004072471346897272,
         "total_high": 0.00790783416821029,
         "long_low": 0.0,
         "long_high": 0.0
