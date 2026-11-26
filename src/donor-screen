@@ -189,7 +189,7 @@ def run(args):
     cfg = dict(export_pairwise=True,cohort=out.name,offspring_count=n,max_donors=kmax,
         individuals=[dict(sample=x,role="recipient" if x in rec else "candidate",cluster=root(x),h=h[indices[x]-1]/bp)
                      for x in rec+don],
-        pairs=[dict(a=a,b=b,allowed=(a,b) in hbd,hbd=hbd.get((a,b),1.0)) for a,b in pairs],
+        pairs=[dict(a=a,b=b,allowed=(a,b) in hbd,king=values[a,b],hbd=hbd.get((a,b),1.0)) for a,b in pairs],
         reference_samples=ids,chromosomes=chroms,rare_file="rare.tsv.gz",het_file="het.tsv")
     conf = out/"config.json"
     if annotation is not None:

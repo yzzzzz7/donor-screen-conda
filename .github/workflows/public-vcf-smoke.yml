@@ -25,7 +25,7 @@ jobs:
         shell: bash -el {0}
         run: |
           conda install -y -c conda-forge -c bioconda openpyxl
-          conda install -y -c https://raw.githubusercontent.com/yzzzzz7/donor-screen-conda/main -c conda-forge -c bioconda donor-screen=0.2.5
+          conda install -y -c https://raw.githubusercontent.com/yzzzzz7/donor-screen-conda/main -c conda-forge -c bioconda donor-screen=0.2.6
       - name: Run the packaged workflow and open all workbooks
         shell: bash -el {0}
         run: |
@@ -94,6 +94,15 @@ jobs:
           assert pair_rows[0][:2] == ("Recipient", "Donor")
           assert "one F1" in pair_rows[0][2] and "one F1" in pair_rows[0][3]
           assert len(pair_rows) == 19 and any(row[-1] for row in pair_rows[1:])
+          king_source = (out / "king.kin0").read_text().splitlines()
+          fields = king_source[0].lstrip("#").split()
+          king = {}
+          for line in king_source[1:]:
+              row = dict(zip(fields, line.split()))
+              names = frozenset((row.get("IID1", row.get("ID1")), row.get("IID2", row.get("ID2"))))
+              king[names] = float(row.get("KINSHIP", row.get("Kinship")))
+          col = pair_rows[0].index("KING kinship coefficient (parents)")
+          assert all(math.isclose(row[col], king[frozenset(row[:2])]) for row in pair_rows[1:])
           table.close()
           prediction = result["predicted_froh"]
           assert prediction["replicates_per_pair"] == 16

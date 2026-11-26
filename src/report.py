@@ -143,6 +143,7 @@ PAIRWISE = {
     "recipient": "Recipient", "donor": "Donor",
     "het": "Expected SNP heterozygosity of one F1 (%)",
     "rare": "Expected new rare alleles in one F1",
+    "king": "KING kinship coefficient (parents)",
     "hbd": "Predicted recent HBD of one F1 (proportion)",
     "total": "Mean total FROH of one F1 (%)",
     "long": "Mean long FROH of one F1 (%)",

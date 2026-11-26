@@ -64,6 +64,10 @@ def read_pairs(cfg, root):
         if key in by_id or key[0] == key[1] or not isinstance(r["allowed"],bool):
             raise ValueError(f"Invalid pair {key}")
         by_id[key] = {"allowed":r["allowed"], "hbd":prob(r["hbd"])}
+    if cfg.get("export_pairwise"):
+        for r in cfg["pairs"]:
+            if "king" in r:
+                by_id[pair_key(r["a"], r["b"])]["king"] = float(r["king"])
     sites = set()
     with (root / cfg["het_file"]).open(encoding="utf-8-sig") as f:
         for row in csv.DictReader(f,delimiter="\t"):
@@ -264,7 +268,7 @@ def run(config_path, *, missense_policy=None):
         result["pairwise"] = [
             dict(recipient=a, donor=d, het=pairs[pair_key(a, d)]["het"],
                  rare=gain[d], hbd=pairs[pair_key(a, d)]["hbd"] if pairs[pair_key(a, d)]["allowed"] else None,
-                 r=pairs[pair_key(a, d)].get("r"), allowed=pairs[pair_key(a, d)]["allowed"])
+                 king=pairs[pair_key(a, d)].get("king"), r=pairs[pair_key(a, d)].get("r"), allowed=pairs[pair_key(a, d)]["allowed"])
             for a in recipients for d in donors
         ]
     return result
