@@ -31,9 +31,8 @@ def emit_vcf(output):
             while True:
                 calls = [dosage(rng, p) for _ in NAMES]
                 for j in (DONOR_START, DONOR_START + 1):
-                    if rng.random() < 0.63:
-                        calls[j] = 1
-                # Give this donor lower heterozygosity and greater ancestry contrast.
+                    calls[j] = dosage(rng, 0.50)
+                # Give this donor lower heterozygosity and more contrasting genotypes.
                 calls[DONOR_START + 2] = dosage(rng, 0.94)
                 if 0 < sum(calls) < 2 * len(calls):
                     break
