@@ -118,20 +118,37 @@ jobs:
           assert len(list(book.active.values)) == 4
           book.close()
           PYTHON
-      - name: Verify an exact two-donor quota
+      - name: Run the documented two-donor example
         shell: bash -el {0}
         run: |
-          base="$RUNNER_TEMP/donor-example"
-          donor-screen "$base/fragment.vcf.gz" "$base/roles.tsv" -k 2 -n 3 -t 2 --java-memory 2g --out "$base/exact-two"
+          donor-screen test/input/fragment.vcf.gz test/input/roles.tsv --froh-bed test/input/autosomes.bed --cds-sites test/input/synthetic-cds.tsv --froh-chr-set 22 -k 2 -n 3 -r 50 -t 2 --java-memory 2g --out demo-two-donors
           python - <<'PYTHON'
+          import csv
           import json
-          import os
           from pathlib import Path
-          root = Path(os.environ["RUNNER_TEMP"]) / "donor-example/exact-two"
+          from openpyxl import load_workbook
+          root = Path("demo-two-donors")
           data = json.loads((root / "results.json").read_text())
           assert [row["k"] for row in data["results"]] == [0, 2]
-          assert all(row["k"] == 2 for row in data["alternatives"])
+          control, selected = data["results"]
+          assert len(selected["donors"]) == len(selected["reference_donors"]) == 2
+          assert len(selected["pairs"]) == len(selected["reference_pairs"]) == len(control["pairs"]) == 3
           assert data["cohort"]["offspring_count"] == 3
+          assert all(row["k"] == 2 for row in data["alternatives"])
+          predicted = data["predicted_froh"]
+          assert predicted["replicates_per_pair"] == 50 and predicted["all_recipient_donor_pairs"]
+          assert {plan["plan"] for plan in predicted["plans"]} == {"No introduction", "Selected", "High-heterozygosity reference"}
+          assert all(plan["r"] is not None for plan in predicted["plans"])
+          book = load_workbook(root / "05_pairwise/results.xlsx", read_only=True)
+          fields, *rows = book.active.values
+          assert fields[:3] == ("KING kinship coefficient (parents)", "Recipient", "Donor")
+          total = fields.index("Froh total (%)")
+          long = fields.index("Froh long (>1 Mb) (%)")
+          assert len(rows) == 18 and all(row[-1] == 50 and 0 <= row[long] <= row[total] <= 100 for row in rows)
+          book.close()
+          with (root / "04_predicted_froh/simulated-f1-froh.tsv").open() as source:
+              rows = list(csv.DictReader(source, delimiter="\t"))
+          assert len(rows) == (18 + 3) * 50
           PYTHON
       - name: Run the original PLINK ROH method on observed example genotypes
         shell: bash -el {0}
@@ -180,6 +197,10 @@ jobs:
               cp -r "$source/04_predicted_froh" "$dest/"
             fi
           done
+          demo="$bundle/outputs/04_two_donors"
+          mkdir "$demo"
+          cp demo-two-donors/{report.html,results.csv,results.json,king.kin0} "$demo/"
+          cp -r demo-two-donors/0[12345]_* "$demo/"
           python test/observed-report.py "$base/observed-roh"
           mkdir "$bundle/outputs/03_observed_froh"
           cp "$base/observed-roh"/{report.html,froh.xlsx,froh.tsv,froh.svg,roh.hom} "$bundle/outputs/03_observed_froh/"
@@ -192,7 +213,7 @@ jobs:
         shell: bash
         run: |
           shopt -s nullglob
-          for f in "$RUNNER_TEMP"/donor-example/result/*.log; do
+          for f in "$RUNNER_TEMP"/donor-example/result/*.log demo-two-donors/*.log; do
             printf '\n=== %s ===\n' "$f"
             tail -n 20 "$f"
           done
