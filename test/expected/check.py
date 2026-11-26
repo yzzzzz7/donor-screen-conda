@@ -22,4 +22,4 @@ for folder, count in (("01_selection", 2), ("02_pairings", 2), ("03_combinations
         sheet = ElementTree.fromstring(book.read("xl/worksheets/sheet1.xml"))
         assert len(sheet.find("{*}sheetData")) == count + 1
 assert len(list(run.glob("0*/*.svg"))) == 4
-assert (run / "report.html").read_text(encoding="utf-8").count("<svg ") == 4
+assert (run / "report.html").read_text(encoding="utf-8").count("<svg ") == 8

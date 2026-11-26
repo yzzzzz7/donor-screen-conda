@@ -1,5 +1,10 @@
 """Write Excel tables, SVG plots and a self-contained HTML run report."""
+import csv
+from collections import defaultdict
 from html import escape
+from statistics import mean
+
+from report_locale import bilingual
 from itertools import chain, islice
 import json
 from pathlib import Path
@@ -133,6 +138,34 @@ def html_table(columns, rows):
     return f"<div class='table'><table><thead><tr>{header}</tr></thead><tbody>{''.join(body)}</tbody></table></div>"
 
 
+
+PAIRWISE = {
+    "recipient": "Recipient", "donor": "Donor",
+    "het": "Expected SNP heterozygosity of one F1 (%)",
+    "rare": "Expected new rare alleles in one F1",
+    "hbd": "Predicted recent HBD of one F1 (proportion)",
+    "total": "Mean total FROH of one F1 (%)",
+    "long": "Mean long FROH of one F1 (%)",
+    "r": "Predicted homozygous missense R of one F1 (%)",
+    "allowed": "Pairing allowed", "replicates": "Simulated F1 count",
+}
+
+
+def write_pairwise(out, rows):
+    simulated = defaultdict(list)
+    source = out / "04_predicted_froh" / "simulated-f1-froh.tsv"
+    if source.exists():
+        with source.open(encoding="utf-8", newline="") as handle:
+            for row in csv.DictReader(handle, delimiter="\t"):
+                key = tuple(sorted((row["parent1"], row["parent2"])))
+                simulated[key].append((float(row["FROH_100kb"]), float(row["FROH_gt1Mb"])))
+    for row in rows:
+        values = simulated.get(tuple(sorted((row["recipient"], row["donor"]))), [])
+        total, long = (100 * mean(column) for column in zip(*values)) if values else (None, None)
+        yield dict(row, het=row["het"] * 100, r=None if row["r"] is None else row["r"] * 100,
+                   total=total, long=long, replicates=len(values))
+
+
 def write_report(out, *, extra_section=""):
     data = json.loads((out / "results.json").read_text(encoding="utf-8"))
     results = data["results"]
@@ -215,4 +248,15 @@ An em dash indicates an unavailable or inapplicable value. The control introduce
 <p><a href="results.csv">Original results CSV</a> · <a href="results.json">Original results JSON</a></p>
 {method}{"".join(sections)}{extra_section}
 </html>"""
-    (out / "report.html").write_text(page, encoding="utf-8")
+    if "pairwise" in data:
+        directory = out / "05_pairwise"
+        directory.mkdir()
+        write_xlsx(directory / "results.xlsx", PAIRWISE, write_pairwise(out, data["pairwise"]))
+        pairwise = (
+            '<section><h2>Recipient–donor pairwise results</h2>'
+            '<p>Each row is one recipient–donor pair. Heterozygosity and rare-allele gain describe one F1. '
+            'Blank FROH or R cells indicate unavailable results.</p>'
+            '<p><a href="05_pairwise/results.xlsx">Download Excel</a></p></section>'
+        )
+        page = page.replace("</html>", pairwise + "</html>")
+    (out / "report.html").write_text(bilingual(page), encoding="utf-8")

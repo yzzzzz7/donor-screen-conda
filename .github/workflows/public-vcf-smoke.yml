@@ -25,7 +25,7 @@ jobs:
         shell: bash -el {0}
         run: |
           conda install -y -c conda-forge -c bioconda openpyxl
-          conda install -y -c https://raw.githubusercontent.com/yzzzzz7/donor-screen-conda/main -c conda-forge -c bioconda donor-screen=0.2.4
+          conda install -y -c https://raw.githubusercontent.com/yzzzzz7/donor-screen-conda/main -c conda-forge -c bioconda donor-screen=0.2.5
       - name: Run the packaged workflow and open all workbooks
         shell: bash -el {0}
         run: |
@@ -81,8 +81,20 @@ jobs:
           workbook.close()
           assert (out / "01_selection/missense-r.svg").exists()
           page = (out / "report.html").read_text()
-          assert page.count("<svg ") == 5
-          assert "Predicted offspring FROH" in page
+          assert page.count("<svg ") == 10
+          assert "Predicted offspring FROH" in page and "后代 FROH 预测" in page
+          assert 'id="chinese" lang="zh-CN" hidden' in page
+          by_donor = {}
+          for row in result["pairwise"]:
+              by_donor.setdefault(row["donor"], set()).add(row["rare"])
+          assert len(result["pairwise"]) == 18
+          assert all(len(v) == 1 for v in by_donor.values())
+          table = load_workbook(out / "05_pairwise/results.xlsx", read_only=True)
+          pair_rows = list(table.active.values)
+          assert pair_rows[0][:2] == ("Recipient", "Donor")
+          assert "one F1" in pair_rows[0][2] and "one F1" in pair_rows[0][3]
+          assert len(pair_rows) == 19 and any(row[-1] for row in pair_rows[1:])
+          table.close()
           prediction = result["predicted_froh"]
           assert prediction["replicates_per_pair"] == 16
           assert {p["plan"] for p in prediction["plans"]} == {"No introduction", "Selected", "High-heterozygosity reference"}
@@ -134,7 +146,7 @@ jobs:
             dest="$bundle/outputs/${pair#*:}"
             mkdir -p "$dest"
             cp "$source"/{report.html,results.csv,results.json} "$dest/"
-            cp -r "$source"/0[123]_* "$dest/"
+            cp -r "$source"/0[1235]_* "$dest/"
             if [[ -d "$source/04_predicted_froh" ]]; then
               cp -r "$source/04_predicted_froh" "$dest/"
             fi

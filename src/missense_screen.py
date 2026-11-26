@@ -63,19 +63,19 @@ def compare(row, old, r_cap, policy):
     row.update(old_donors=old["donors"],old_pairs=old["pairs"],old_r=old.get("r"),
                old_rare=old.get("rare"),r_cap=r_cap,r_policy=policy)
     if row["k"] == 0:
-        row["change"]="无引入对照，沿用相同配对。"
+        row["change"]="The no-introduction control uses the same pairings."
     elif policy=="report":
-        row["change"]="已计算R；未指定上限，四指标名次待定。"
+        row["change"]="R is reported alongside the original ranking."
     elif not old["donors"]:
-        row["change"]="原亲缘和近交限制下已无可行供体。"
+        row["change"]="No donors pass the original kinship and recent HBD limits."
     elif not row["donors"]:
-        row["change"]="原方案的R超过上限，本名额没有同时达标的组合。"
+        row["change"]="No combination meets both limits at this donor count."
     elif old["donors"] != row["donors"]:
-        row["change"]="原组合在双上限下无法保住原排序，新组合的预期新增变异最多。"
+        row["change"]="The new selection maximizes expected new rare alleles under both limits."
     elif [(p["parent1"],p["parent2"]) for p in old["pairs"]] != [(p["parent1"],p["parent2"]) for p in row["pairs"]]:
-        row["change"]="供体相同，调整受体配对后同时满足R和近交上限。"
+        row["change"]="The same donors meet both limits with adjusted recipient pairings."
     else:
-        row["change"]="原首选的R已达标，供体和配对均相同。"
+        row["change"]="The original donors and pairings meet both limits."
     return row
 
 

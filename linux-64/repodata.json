@@ -159,6 +159,33 @@
       "sha256": "a1ed0873be5b67f20c1beb25d78070741bcfa60418867819cbc84b0a464af972",
       "md5": "8eddec7b8b72782f2d3a4e7f1d1f231f",
       "size": 22819
+    },
+    "donor-screen-0.2.5-0.tar.bz2": {
+      "name": "donor-screen",
+      "version": "0.2.5",
+      "build": "0",
+      "build_number": 0,
+      "subdir": "linux-64",
+      "depends": [
+        "python >=3.10",
+        "bcftools",
+        "plink2",
+        "openjdk 17.*",
+        "r-base 4.5.*",
+        "r-foreach",
+        "r-doparallel",
+        "r-data.table",
+        "r-rcolorbrewer",
+        "r-iterators",
+        "gcc_linux-64",
+        "make",
+        "curl",
+        "gfortran_linux-64",
+        "plink 1.90.*"
+      ],
+      "sha256": "c43a94222cfdde330eb7cbe48dc394e30f6ff4ad0465f9cb3e60b7be60415e7f",
+      "md5": "eca045ffec3bd45e9dba0642b9824884",
+      "size": 24891
     }
   },
   "removed": [],

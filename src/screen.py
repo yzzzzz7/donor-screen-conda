@@ -150,7 +150,7 @@ def run(config_path, *, missense_policy=None):
     except ValueError as e:
         raise ValueError("No recipient-only baseline satisfies the supplied pairing limits") from e
     baseline = dict(k=0, donors=[],rare=0,cap=None,reference_donors=[],
-                    reason="仅用受体繁殖，选出近期HBD最低的可行配对作为对照。",**metrics(base))
+                    reason="The no-introduction control uses the feasible recipient-only pairings with the lowest recent HBD.",**metrics(base))
     if r_file:
         annotate(baseline,pairs)
         compare(baseline,baseline.copy(),None,policy)
@@ -181,7 +181,7 @@ def run(config_path, *, missense_policy=None):
         if not by_group:
             rows.append(dict(k=k,donors=[],pairs=[],hbd=None,het=None,rare=None,cap=None,
                              eligible_count=0,possible_count=len(groups),
-                             reason="无满足供体近亲簇及配对条件的组合。"))
+                             reason="No combination meets the donor-cluster and pairing criteria."))
             alternatives.extend(dict(k=k,donors=list(g),cap=None,rare=None,hbd=None,het=None,
                                      **{"pass":False}) for g in groups)
             if r_file:
@@ -212,9 +212,9 @@ def run(config_path, *, missense_policy=None):
                       reference_rare=reference_plan["rare"],reference_het=reference_plan["het"],
                       gain_over_reference=winner["rare"]-reference_plan["rare"],
                       runner_up=runner["donors"] if runner else [],runner_gap=winner["rare"]-runner["rare"] if runner else None)
-        winner["reason"] = f"{len(groups)}种组合中{len(admitted)}种达标，所选方案预计传入的不同稀有等位基因数最多。"
+        winner["reason"] = f"Of {len(groups)} combinations, {len(admitted)} qualified. The selected plan maximizes expected distinct new rare alleles."
         if runner and winner["runner_gap"]==0:
-            winner["reason"] += "新增数并列时依次按较低HBD、样本编号确定顺序。"
+            winner["reason"] += " Ties are resolved by lower recent HBD, then sample identifiers."
         if r_file:
             annotate(winner,pairs)
             annotate(reference_plan,pairs)
@@ -257,35 +257,45 @@ def run(config_path, *, missense_policy=None):
                     {"reference":reference_plan["r"],"baseline":baseline["r"]},metrics)
             winner["reason"]=winner["change"]
         rows.append(winner)
-    return dict(version="0.2" if r_file else "0.1",cohort=cohort,individuals=people,results=rows,alternatives=alternatives)
+    result = dict(version="0.2" if r_file else "0.1",cohort=cohort,individuals=people,results=rows,alternatives=alternatives)
+    if cfg.get("export_pairwise"):
+        gain = {d: sum(c * gt[j] for gt, c in patterns.items()) / 2
+                for j, d in enumerate(donors)}
+        result["pairwise"] = [
+            dict(recipient=a, donor=d, het=pairs[pair_key(a, d)]["het"],
+                 rare=gain[d], hbd=pairs[pair_key(a, d)]["hbd"] if pairs[pair_key(a, d)]["allowed"] else None,
+                 r=pairs[pair_key(a, d)].get("r"), allowed=pairs[pair_key(a, d)]["allowed"])
+            for a in recipients for d in donors
+        ]
+    return result
 
 
 def main():
     folder = Path(__file__).resolve().parent
-    parser = argparse.ArgumentParser(description="按受体筛选遗传拯救候选个体")
+    parser = argparse.ArgumentParser(description="Recipient-specific donor screening for genetic rescue")
     default_config=folder/"20261112_R_inputs.json"
     if not default_config.exists():
         default_config=folder/"20261112_Snow_inputs.json"
     parser.add_argument("config",nargs="?",type=Path,default=default_config)
-    parser.add_argument("output",nargs="?",type=Path,default=folder/"筛选结果.json")
-    parser.add_argument("--csv",type=Path,help="另存可用Excel打开的简表")
-    parser.add_argument("--r-policy",choices=["report","reference","baseline"],help="纯合错义比例筛选规则，可覆盖配置中的设置")
+    parser.add_argument("output",nargs="?",type=Path,default=folder/"results.json")
+    parser.add_argument("--csv",type=Path,help="Write a CSV summary")
+    parser.add_argument("--r-policy",choices=["report","reference","baseline"],help="Override the configured R screening policy")
     args = parser.parse_args()
     paths = [p.resolve() for p in (args.config,args.output,args.csv) if p is not None]
     if len(set(paths)) != len(paths):
-        parser.error("输入配置和输出文件应使用不同路径。")
+        parser.error("Input and output paths must differ.")
     result = run(args.config,missense_policy=args.r_policy)
     with output_file(args.output,"utf-8") as f:
         json.dump(result,f,ensure_ascii=False,indent=2,allow_nan=False)
     if args.csv:
         with output_file(args.csv,"utf-8-sig",newline="") as f:
             writer=csv.writer(f)
-            writer.writerow(["引入数","候选个体","预计新增稀有等位基因数","后代SNP杂合比例","后代近期HBD比例","后代预测纯合错义比例R","三指标首选","若以同名额高H为R上限","若以不引入为R上限","解释"])
+            writer.writerow(["Donor count","Selected donors","Expected new rare alleles","Predicted offspring SNP heterozygosity","Predicted recent HBD","Predicted homozygous missense proportion R","Original three-metric selection","Selection with high-heterozygosity R limit","Selection with no-introduction R limit","Rationale"])
             for r in result["results"]:
-                cases = [("+".join(r["conditional"][key]["donors"]) or "无合格组合") if "conditional" in r else ""
+                cases = [("+".join(r["conditional"][key]["donors"]) or "No eligible combination") if "conditional" in r else ""
                          for key in ("reference","baseline")]
                 writer.writerow([r["k"],"+".join(r["donors"]),r["rare"],r["het"],r["hbd"],r.get("r"),"+".join(r.get("old_donors",[])),*cases,r["reason"]])
-    print(f"结果已保存到 {args.output}")
+    print(f"Results written to {args.output}")
 
 
 if __name__ == "__main__":

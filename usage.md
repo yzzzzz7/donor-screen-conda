@@ -1,88 +1,15 @@
-# Linux 供体筛选
+# Donor-screen usage
 
-## Conda 安装（Linux）
-
-解压后进入软件目录，运行：
+Install the Linux package by following the [repository README](README.md).
 
 ```bash
-bash install-conda.sh
-conda activate donor-screen
 donor-screen joint.vcf.gz roles.tsv --out run1
 ```
 
-安装脚本创建独立环境，从作者网站下载原分析的 Beagle jar，并从 CRAN 编译 RZooRoH 0.4.3。需要网络和已安装的 Conda。若同名环境已存在，可用 `bash install-conda.sh donor-screen-new` 指定新名称。安装完成会检查 RZooRoH 版本和 CLI 帮助。
+Use a quality-filtered, sorted, diploid, biallelic SNP VCF. The tab-delimited sample sheet starts with `#autosomes=1,2` and `#reference_bp=123456789` settings followed by a `sample` and `role` header. Roles are `recipient`, `donor`, or `reference`. Set `#king_panel=joint` to use the joint VCF for KING or supply the original independent panel with `--king-vcf`. Use `--offspring` and `--max-donors` to set quotas of 1–3. Each F1 requires two distinct recipients in the no-introduction control. Choose a new output directory.
 
-## 手动安装
+Supply a curated TSV or TSV.GZ with `chrom`, `pos`, `ref`, `alt`, and `missense` columns using `--cds-sites` to calculate R. A zero flag indicates another CDS SNP included in the denominator. A one flag indicates a missense SNP. Coordinates and alleles must match the VCF. Alternatively, use `--cds-panel` with the same columns plus observed ALT dosages by sample. The default `--r-policy report` reports R. The `reference` and `baseline` policies impose the high-heterozygosity and no-introduction R limits, respectively.
 
-安装 Python ≥3.10、bcftools、PLINK 2、Java、Beagle 5.4（原分析 jar：beagle.25Mar22.4f6.jar）、R 和 RZooRoH 0.4.3，前四个命令及 Rscript 置于 PATH。将本包解压到同一目录，运行 chmod +x donor-screen，然后 export BEAGLE_JAR=/path/to/beagle.25Mar22.4f6.jar。
+Use `--froh-bed` with whole-autosome BED rows (chromosome, zero, length) to predict F1 FROH for selected and comparison pairings. Defaults are 100 simulated F1 per pair, seed 50483, and 1 cM/Mb. PLINK 1.9 identifies total ROH at least 100 kb and long ROH over 1 Mb. Use `--froh-replicates`, `--froh-seed` and `--froh-chr-set` to specify these run settings. For observed FROH, run `donor-screen froh --help`.
 
-运行： ./donor-screen joint.vcf.gz roles.tsv --out run1
-
-roles.tsv 用制表符，示例：
-
-    #autosomes=1,2
-    #reference_bp=123456789
-    #king_panel=joint
-    sample	role
-    R01	recipient
-    R02	recipient
-    R03	recipient
-    R04	recipient
-    R05	recipient
-    R06	recipient
-    D01	donor
-    D02	donor
-    D03	donor
-    F01	reference
-
-请换成实际常染色体范围和现有个体杂合度使用的参考分母。所有列出的样本组成频率参照和亲缘计算队列，reference 仅作参照。使用质控完成、按基因组位置排序的联合二倍体双等位 SNP VCF。默认每方案 3 个 F1、最多 3 个供体，至少需 6 只受体及相应候选。可以用 --offspring 和 --max-donors 指定配额。运行目录须尚不存在。
-
-#king_panel=joint 表示明确采用联合 VCF 的指定常染色体 SNP 做 KING。复现原论文的独立 LD 面板时，用 --king-vcf adopted_king.vcf.gz，并提供原频率参照和亲缘分簇队列。程序不会另设 LD 或缺失阈值；联合 SNP 面板与原独立面板可产生不同的亲缘结果。先对基因型、参考范围和队列进行核对。
-
-保持 KING 0.177、Beagle seed 50483、RZooRoH 六速率和 1 cM/Mb 假设、近期 HBD Rc≤25、原有最大化首次传递方案。HBD 不收敛时停止。输出 results.json 和 results.csv，保留日志及原生 HBD 批次。只提供两个输入文件时计算前三项。可按下节传入 CDS 注释计算第四项 R。
-
-
-安装 R 包时可用 Rscript -e 'remotes::install_version("RZooRoH", version="0.4.3")'（先安装 remotes，必要时使用系统的编译工具）。
-
-## Output report
-
-Open `report.html` in a browser. It contains the summary, selected pairings, and four charts (five when R is available). Its Excel links work when the report stays alongside the numbered folders. The browser can print the report to PDF.
-
-| Folder | Contents |
-| --- | --- |
-| `01_selection/` | Selected plans and high-heterozygosity reference plans, with rare-allele and heterozygosity charts |
-| `02_pairings/` | Selected parents and predicted offspring metrics, with a recent-HBD chart |
-| `03_combinations/` | All candidate combinations and their eligibility, with a count chart |
-
-Each folder contains a `results.xlsx` workbook. The original `results.csv` and `results.json` remain in the run root. Tables store the original proportions; charts label heterozygosity and HBD as percentages.
-
-## 第四项指标 R
-
-```bash
-donor-screen joint.vcf.gz roles.tsv --cds-sites coding.tsv --out run-r
-```
-
-`--cds-sites` 接受 TSV 或 TSV.GZ，列名为 `chrom`、`pos`、`ref`、`alt`、`missense`。请提供分析范围内完整的、经人工或既定注释流程确认的 CDS SNP 面板，错义位点标 1，其他纳入分母的 CDS 位点标 0。坐标和两个等位基因必须与 VCF 一致。程序使用原始观测基因型的 ALT 剂量。若原分析有独立 CDS 面板，用 `--cds-panel` 传入同样五列加受体和供体各样本的 ALT 剂量列（0、1、2）。纳入位点缺失或配对分母为零时停止。
-
-每个后代的 R 为预期 ALT 纯合错义位点数除以预期 ALT 纯合 CDS 位点数，方案按后代取平均。默认 `--r-policy report` 计算并展示 R，保留原三指标入选方案。`--r-policy reference` 或 `baseline` 分别采用原筛选器内置的高杂合度对照或无引入对照 R 上限。R 写入 CSV、JSON、Excel 和 HTML 报告，附 R 对比图。
-
-## 实测个体的 FROH
-
-对已经测序的后代或亲本，提供经过质控、已建索引的 VCF、每行一个样本 ID 的文件和全常染色体 BED。BED 的每行须为染色体名、0、该染色体长度；坐标与 VCF 一致。`--chr-set` 为 PLINK 使用的常染色体数。
-
-```bash
-donor-screen froh offspring.vcf.gz offspring.txt autosomes.bed --chr-set 22 --out observed-roh
-```
-
-输出 `froh.xlsx`、`froh.tsv`、PLINK `roh.hom` 和运行日志。沿用研究的 PLINK 1.9 识别参数。总 FROH 为长度 ≥100 kb 的 ROH 总长除以 BED 染色体总长，长 FROH 采用严格 >1 Mb。未检出 ROH 的样本记为 0。比较亲本和后代时统一参考范围、VCF 过滤和 ROH 参数。此命令用于已测序个体，原供体筛选继续采用预测后代近期 HBD。
-
-## 配对前预测后代 FROH
-
-增加 `--froh-bed` 可在原筛选完成后，对入选方案、高杂合度对照和无引入对照模拟 F1。使用全常染色体 BED，每行依次为染色体名、0 和染色体长度。BED 与 VCF 的染色体名称和参考坐标须一致。结合 `--cds-sites` 时，报告并排展示五类指标。
-
-```bash
-donor-screen joint.vcf.gz roles.tsv --cds-sites coding.tsv --froh-bed autosomes.bed \
-  --froh-replicates 100 --out run-five
-```
-
-模拟复用分相亲本基因型，按 Haldane 模型和恒定 1 cM/Mb 重组率抽取双亲各一条重组单倍型。默认每个配对模拟 100 个 F1，随机种子为 50483。使用原 PLINK 1.9 方法计算 ≥100 kb 总 FROH 和 >1 Mb 长 FROH。报告对每个方案给出均值和模拟方案均值的第 2.5 和 97.5 百分位。`--froh-chr-set` 可设置 PLINK 常染色体数。输出见 `04_predicted_froh/` 和 `report.html`。模拟区间取决于输入位点覆盖、分相和重组假设。FROH 用于比较，沿用原有方案排序。
+Open `report.html` locally and use the **中文 / English** button to switch languages. The result tables and Excel workbooks are in English. The pairwise workbook at `05_pairwise/results.xlsx` includes one row per recipient and candidate donor. Its heterozygosity and rare-allele columns describe **one F1**, with rare-allele gain measured against the recipient population. At plan level, an allele counts once across all proposed F1. Pairwise R requires CDS input. Pairwise FROH appears for simulated pairings.

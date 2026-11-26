@@ -1,6 +1,6 @@
 # donor-screen
 
-Public Conda channel for donor-screen v0.2.4 on Linux x86_64.
+Public Conda channel for donor-screen v0.2.5 on Linux x86_64.
 
 ```bash
 conda install -c https://raw.githubusercontent.com/yzzzzz7/donor-screen-conda/main -c conda-forge -c bioconda donor-screen
