@@ -508,6 +508,7 @@
   "predicted_froh": {
     "replicates_per_pair": 16,
     "seed": 50483,
+    "all_recipient_donor_pairs": true,
     "recombination_cm_per_mb": 1,
     "chromosomes": [
       "22"

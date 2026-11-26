@@ -2,7 +2,7 @@
 
 [View all three reports online](https://yzzzzz7.github.io/donor-screen-conda/)
 
-From the repository root after installing donor-screen 0.2.7:
+From the repository root after installing donor-screen 0.2.8:
 
     bash test/run-all.sh demo-run
 
@@ -15,3 +15,5 @@ Use `bash test/run.sh demo-run` for the original screening example alone.
 The example uses 12 public 1000 Genomes Phase 1 samples and 8,576 biallelic SNPs from hg19 chr22:20,000,000–21,000,000. Sample roles and coding/missense annotations are assigned for software testing. The observed FROH example divides detected lengths in the fragment by the chr22 reference length. Treat these outputs as software examples. [IGSR data policy](https://www.internationalgenome.org/IGSR_disclaimer/).
 
 The pairwise workbook starts with the signed KING kinship coefficient for each recipient–donor pair.
+
+The five-metric example provides predicted FROH for all 18 recipient–donor pairs.
