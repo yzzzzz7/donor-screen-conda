@@ -9,32 +9,34 @@ on:
 permissions:
   contents: read
   actions: read
-  pages: write
-  id-token: write
 jobs:
-  publish:
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:
           path: test/expected/outputs
-
-      - name: Wait for the Pages artifact to be listed
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          for attempt in {1..10}; do
-            if gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts" --jq '.artifacts[].name' | grep -qx github-pages; then
-              exit 0
-            fi
-            sleep 5
-          done
-          echo "The Pages artifact was uploaded but is not visible in the Actions API." >&2
-          exit 1
-      - uses: actions/deploy-pages@v4
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+      actions: read
+    environment:
+      name: github-pages
+      url: ${{ steps.retry.outputs.page_url || steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy the example reports
+        uses: actions/deploy-pages@v4
         id: deployment
+        continue-on-error: true
+      - name: Wait before retrying access to the uploaded artifact
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 15
+      - name: Retry the deployment
+        if: steps.deployment.outcome == 'failure'
+        uses: actions/deploy-pages@v4
+        id: retry

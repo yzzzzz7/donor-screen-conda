@@ -19,3 +19,9 @@ The pairwise workbook starts with the signed KING kinship coefficient for each r
 The five-metric example provides predicted FROH for all 18 recipient–donor pairs.
 
 The joint VCF is named `donor-recipient.vcf.gz`. Its samples use role-based English IDs (Donor_01, Recipient_01, and Reference_01). [sample-names.tsv](input/sample-names.tsv) maps each ID to the public source sample. Variant records and genotype calls are unchanged.
+
+## Synthetic donor-ranking example
+
+This independent example uses artificial genotypes and CDS labels. Fixed-seed generation is documented in [make-contrast-vcf.py](make-contrast-vcf.py). The CDS flags alternate by row. The same role-based IDs are reused independently in the two datasets.
+
+    donor-screen test/input/synthetic-contrast.vcf.gz test/input/synthetic-contrast-roles.tsv --froh-bed test/input/synthetic-contrast.bed --cds-sites test/input/synthetic-contrast-cds.tsv --froh-chr-set 1 -k 2 -n 3 -r 50 -t 2 --java-memory 2g --out demo-synthetic-contrast

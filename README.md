@@ -73,6 +73,12 @@ Donor count and F1 slots both support values from 1 to 3, with donor count at mo
 
 For FROH measured from sequenced individuals, use `donor-screen froh --help`.
 
+### Synthetic donor-ranking example
+
+This separate example uses **artificial genotypes and CDS labels**. For the same two-donor quota, Donor_01, Donor_03 adds **650.0** expected rare alleles versus **165.0** for the high-heterozygosity reference (Donor_01, Donor_02).
+
+[Download all 18 pairwise results as Excel](https://yzzzzz7.github.io/donor-screen-conda/05_synthetic_contrast/05_pairwise/results.xlsx) · [Open the bilingual report](https://yzzzzz7.github.io/donor-screen-conda/05_synthetic_contrast/report.html) · [Reproduce the example](test/README.md#synthetic-donor-ranking-example)
+
 ## Other public examples
 
 [Open the bilingual example report](https://yzzzzz7.github.io/donor-screen-conda/02_screen_with_R/report.html) · [Download the 18-pair Excel workbook](https://yzzzzz7.github.io/donor-screen-conda/02_screen_with_R/05_pairwise/results.xlsx)
