@@ -88,10 +88,7 @@ def simulate(genotypes, names, pairs, count, bed, out, seed):
     return samples
 
 
-def predict(data, genotypes, names, bed, chr_set, out, count, seed):
-    plans = list(plans_for(data["results"]))
-    pairs = sorted({pair_key(pair) for plan in plans for pair in plan["pairs"]})
-    out.mkdir()
+def simulate_batch(genotypes, names, pairs, count, bed, chr_set, out, seed):
     with TemporaryDirectory(dir=out, prefix="simulation-") as tmp:
         work = Path(tmp)
         samples = simulate(genotypes, names, pairs, count, bed, work, seed)
@@ -101,8 +98,24 @@ def predict(data, genotypes, names, bed, chr_set, out, count, seed):
         with (called / "froh.tsv").open(encoding="utf-8", newline="") as source:
             values = {row["sample"]: (float(row["FROH_100kb"]), float(row["FROH_gt1Mb"]))
                       for row in csv.DictReader(source, delimiter="\t")}
-    lookup = {pair: [values[s] for s in samples[i * count:(i + 1) * count]]
-              for i, pair in enumerate(pairs)}
+    return {pair: [values[s] for s in samples[i * count:(i + 1) * count]]
+            for i, pair in enumerate(pairs)}
+
+
+def predict(data, genotypes, names, bed, chr_set, out, count, seed, *, extra_genotypes=None):
+    plans = list(plans_for(data["results"]))
+    pairs = sorted({pair_key(pair) for plan in plans for pair in plan["pairs"]})
+    out.mkdir()
+    lookup = simulate_batch(genotypes, names, pairs, count, bed, chr_set, out, seed)
+    if extra_genotypes is not None:
+        all_pairs = {tuple(sorted((row["recipient"], row["donor"]))) for row in data["pairwise"]}
+        extra = sorted(all_pairs - set(pairs))
+        # Keep the original plan simulations and their random stream intact.
+        batch_size = 6
+        for start in range(0, len(extra), batch_size):
+            batch = extra[start:start + batch_size]
+            lookup.update(simulate_batch(extra_genotypes(), names, batch, count, bed, chr_set,
+                                         out, seed + 1 + start // batch_size))
     with (out / "simulated-f1-froh.tsv").open("w", encoding="utf-8", newline="") as stream:
         writer = csv.writer(stream, delimiter="\t")
         writer.writerow(("parent1", "parent2", "replicate", "FROH_100kb", "FROH_gt1Mb"))

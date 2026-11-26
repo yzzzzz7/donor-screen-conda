@@ -213,9 +213,10 @@ def run(args):
         data = json.loads(output.read_text(encoding="utf-8"))
         summary = predict(data, vcf(out / "phased.vcf.gz", ids), ids, args.froh_bed,
                           args.froh_chr_set, out / "04_predicted_froh",
-                          args.froh_replicates, args.froh_seed)
+                          args.froh_replicates, args.froh_seed,
+                          extra_genotypes=lambda: vcf(out / "phased.vcf.gz", ids))
         data["predicted_froh"] = dict(replicates_per_pair=args.froh_replicates,
-                                     seed=args.froh_seed, recombination_cm_per_mb=1,
+                                     seed=args.froh_seed, all_recipient_donor_pairs=True, recombination_cm_per_mb=1,
                                      chromosomes=chroms, plink_chr_set=args.froh_chr_set,
                                      bed_sha256=hashlib.sha256(args.froh_bed.read_bytes()).hexdigest(),
                                      plans=summary)

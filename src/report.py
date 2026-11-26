@@ -256,7 +256,7 @@ An em dash indicates an unavailable or inapplicable value. The control introduce
         pairwise = (
             '<section><h2>Recipient–donor pairwise results</h2>'
             '<p>Each row is one recipient–donor pair. Heterozygosity and rare-allele gain describe one F1. '
-            'FROH is shown for simulated pairs only. R requires CDS annotations.</p>'
+            'With FROH prediction enabled, every recipient–donor pair is simulated, including pairs that fail the pairing filter. R requires CDS annotations.</p>'
             '<p><a href="05_pairwise/results.xlsx">Download Excel</a></p></section>'
         )
         page = page.replace("</html>", pairwise + "</html>")

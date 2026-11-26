@@ -34,7 +34,7 @@ ZH = {
     "Long FROH 97.5th percentile":"长片段 FROH 第 97.5 百分位",
     "Excel":"Excel","Simulated F1 results":"模拟 F1 逐次结果",
     "Heterozygosity and HBD are proportions in the tables and percentages in the plots. An em dash indicates an unavailable or inapplicable value. The control introduces zero donors.":"表中的杂合度和 HBD 为比例，图中以百分比表示。长破折号表示没有结果或不适用。无引入对照的供体数为零。",
-    "Each row is one recipient–donor pair. Heterozygosity and rare-allele gain describe one F1. FROH is shown for simulated pairs only. R requires CDS annotations.":"每行对应一个受体与供体配对。杂合度和新增稀有等位基因数均按单个 F1 计算。FROH 仅显示已模拟配对的结果。R 需要 CDS 注释。",
+    "Each row is one recipient–donor pair. Heterozygosity and rare-allele gain describe one F1. With FROH prediction enabled, every recipient–donor pair is simulated, including pairs that fail the pairing filter. R requires CDS annotations.":"每行对应一个受体与供体配对。杂合度和新增稀有等位基因数均按单个 F1 计算。启用 FROH 预测时模拟每一个受体与供体配对，包括未通过筛选的配对。R 需要 CDS 注释。",
     "R is the mean across predicted offspring of the expected homozygous ALT missense count divided by the expected homozygous ALT CDS count. R is reported alongside the three-metric choice.":"逐个后代计算预期纯合 ALT 错义位点数与预期纯合 ALT CDS 位点数之比后，取方案均值。R 与原三指标筛选结果并列展示。",
     "R is the mean across predicted offspring of the expected homozygous ALT missense count divided by the expected homozygous ALT CDS count. R is capped at the high-heterozygosity reference plan.":"逐个后代计算预期纯合 ALT 错义位点数与预期纯合 ALT CDS 位点数之比后，取方案均值。R 上限取高杂合度对照方案值。",
     "R is the mean across predicted offspring of the expected homozygous ALT missense count divided by the expected homozygous ALT CDS count. R is capped at the no-introduction control.":"逐个后代计算预期纯合 ALT 错义位点数与预期纯合 ALT CDS 位点数之比后，取方案均值。R 上限取无引入对照值。",

@@ -25,7 +25,7 @@ jobs:
         shell: bash -el {0}
         run: |
           conda install -y -c conda-forge -c bioconda openpyxl
-          conda install -y -c https://raw.githubusercontent.com/yzzzzz7/donor-screen-conda/main -c conda-forge -c bioconda donor-screen=0.2.7=1
+          conda install -y -c https://raw.githubusercontent.com/yzzzzz7/donor-screen-conda/main -c conda-forge -c bioconda donor-screen=0.2.8
       - name: Run the packaged workflow and open all workbooks
         shell: bash -el {0}
         run: |
@@ -104,7 +104,9 @@ jobs:
           col = pair_rows[0].index("KING kinship coefficient (parents)")
           assert all(math.isclose(row[col], king[frozenset(row[1:3])]) for row in pair_rows[1:])
           assert "Froh total (%)" in pair_rows[0] and "Froh long (>1 Mb) (%)" in pair_rows[0]
-          assert sum(bool(row[-1]) for row in pair_rows[1:]) == 1
+          total_col = pair_rows[0].index("Froh total (%)")
+          long_col = pair_rows[0].index("Froh long (>1 Mb) (%)")
+          assert all(row[-1] == 16 and 0 <= row[long_col] <= row[total_col] <= 100 for row in pair_rows[1:])
           assert not (out / "06_king").exists()
           table.close()
           prediction = result["predicted_froh"]
