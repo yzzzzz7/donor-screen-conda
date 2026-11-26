@@ -1,27 +1,20 @@
-# Public VCF examples
+# Synthetic public example
 
-[View the reports online](https://yzzzzz7.github.io/donor-screen-conda/)
+[Synthetic VCF](input/synthetic-contrast.vcf.gz) · [Complete pairwise Excel](expected/outputs/05_pairwise/results.xlsx) · [Bilingual report](https://yzzzzz7.github.io/donor-screen-conda/)
 
-From the repository root after installing donor-screen 0.2.9:
+The repository ships one example VCF and one expected Excel workbook. The independent artificial dataset has six recipients, three candidate donors, three additional reference samples, and 8,680 markers on one simulated chromosome. All genotypes and CDS labels are synthetic.
 
-    bash test/run-all.sh demo-run
+Run this command from the repository root after installing donor-screen 0.2.9.
 
-Use `bash test/run.sh demo-run` for the original screening example alone.
+```bash
+donor-screen test/input/synthetic-contrast.vcf.gz test/input/roles.tsv --froh-bed test/input/autosomes.bed --cds-sites test/input/synthetic-cds.tsv --froh-chr-set 1 -k 2 -n 3 -r 50 -t 2 --java-memory 2g --out demo-two-donors
+```
 
-- [input/](input/) contains the example VCF, sample roles and additional inputs for R and FROH.
-- [expected/outputs/](expected/outputs/) contains the HTML reports, result tables and figures. Screening reports support English and Chinese and link to the English pairwise workbook. The five-metric report uses 16 simulated F1 per mating to exercise predicted FROH. The original CSV is retained at `expected/results.csv` for the smoke check.
-- `fetch-input.sh` regenerates the VCF from the public callset. Run `bash test/fetch-input.sh regenerated.vcf.gz`.
+The role sheet, reference BED and CDS labels are in [input/](input/). The generator [make-contrast-vcf.py](make-contrast-vcf.py) defines a fixed seed, low-heterozygosity background markers, and constructed homozygous runs.
 
-The example uses 12 public 1000 Genomes Phase 1 samples and 8,576 biallelic SNPs from hg19 chr22:20,000,000–21,000,000. Sample roles and coding/missense annotations are assigned for software testing. The observed FROH example divides detected lengths in the fragment by the chr22 reference length. Treat these outputs as software examples. [IGSR data policy](https://www.internationalgenome.org/IGSR_disclaimer/).
+To regenerate the fixture with the same seed, run the following from the repository root.
 
-The pairwise workbook starts with the signed KING kinship coefficient for each recipient–donor pair.
-
-The five-metric example provides predicted FROH for all 18 recipient–donor pairs.
-
-The joint VCF is named `donor-recipient.vcf.gz`. Its samples use role-based English IDs (Donor_01, Recipient_01, and Reference_01). [sample-names.tsv](input/sample-names.tsv) maps each ID to the public source sample. Variant records and genotype calls are unchanged.
-
-## Synthetic donor-ranking example
-
-This independent example uses artificial genotypes and CDS labels. Fixed-seed generation is documented in [make-contrast-vcf.py](make-contrast-vcf.py). The CDS flags alternate by row. The same role-based IDs are reused independently in the two datasets.
-
-    donor-screen test/input/synthetic-contrast.vcf.gz test/input/synthetic-contrast-roles.tsv --froh-bed test/input/synthetic-contrast.bed --cds-sites test/input/synthetic-contrast-cds.tsv --froh-chr-set 1 -k 2 -n 3 -r 50 -t 2 --java-memory 2g --out demo-synthetic-contrast
+```bash
+python test/make-contrast-vcf.py | bgzip -c > test/input/synthetic-contrast.vcf.gz
+python test/make-contrast-vcf.py --cds > test/input/synthetic-cds.tsv
+```

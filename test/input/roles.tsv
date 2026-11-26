@@ -1,5 +1,5 @@
-#autosomes=22
-#reference_bp=1000001
+#autosomes=1
+#reference_bp=32000000
 #king_panel=joint
 sample	role
 Recipient_01	recipient

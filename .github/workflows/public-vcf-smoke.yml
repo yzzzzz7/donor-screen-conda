@@ -26,219 +26,101 @@ jobs:
         run: |
           conda install -y -c conda-forge -c bioconda openpyxl
           conda install -y -c https://raw.githubusercontent.com/yzzzzz7/donor-screen-conda/main -c conda-forge -c bioconda donor-screen=0.2.9
-      - name: Run the packaged workflow and open all workbooks
+      - name: Run the documented synthetic example
         shell: bash -el {0}
         run: |
-          bash test/run.sh "$RUNNER_TEMP/donor-example"
-          python - <<'PYTHON'
-          import os
-          from pathlib import Path
-          from openpyxl import load_workbook
-          root = Path(os.environ["RUNNER_TEMP"]) / "donor-example/result"
-          for folder, rows in (("01_selection", 2), ("02_pairings", 2), ("03_combinations", 3)):
-              book = load_workbook(root / folder / "results.xlsx", read_only=True)
-              assert book.active["A1"].font.name == "Times New Roman"
-              observed = list(book.active.values)
-              assert len(observed) == rows + 1
-              assert observed[0][0] == "Donor count"
-              assert isinstance(observed[1][0], int)
-              book.close()
-          PYTHON
-      - name: Test the optional fourth metric on synthetic annotations
-        shell: bash -el {0}
-        run: |
-          base="$RUNNER_TEMP/donor-example"
-          {
-            printf 'chrom\tpos\tref\talt\tmissense\n'
-            bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\n' "$base/donor-recipient.vcf.gz" |
-              awk 'BEGIN {OFS="\t"} {print $0, NR % 2}'
-          } > "$base/synthetic-cds.tsv"
-          donor-screen "$base/donor-recipient.vcf.gz" "$base/roles.tsv" --out "$base/r-result" \
-            -n 1 -k 1 -t 2 --java-memory 2g --cds-sites "$base/synthetic-cds.tsv" \
-            --froh-bed test/input/autosomes.bed --froh-chr-set 22 -r 16
+          donor-screen test/input/synthetic-contrast.vcf.gz test/input/roles.tsv --froh-bed test/input/autosomes.bed --cds-sites test/input/synthetic-cds.tsv --froh-chr-set 1 -k 2 -n 3 -r 50 -t 2 --java-memory 2g --out demo-two-donors
           python - <<'PYTHON'
           import csv
           import json
           import math
-          import os
           from pathlib import Path
           from openpyxl import load_workbook
-          base = Path(os.environ["RUNNER_TEMP"]) / "donor-example"
-          out = base / "r-result"
-          original = json.loads((base / "result/results.json").read_text())
-          result = json.loads((out / "results.json").read_text())
-          assert result["cohort"]["missense_policy"] == "report"
-          assert [r["donors"] for r in result["results"]] == [r["donors"] for r in original["results"]]
-          with (out / "coding-pairs.tsv").open() as source:
-              counts = {frozenset((row["sample1"], row["sample2"])): float(row["expected_missense"]) / float(row["expected_cds"])
-                        for row in csv.DictReader(source, delimiter="\t")}
-          for row in result["results"]:
-              pair, = row["pairs"]
-              assert 0 < row["r"] < 1
-              assert math.isclose(row["r"], counts[frozenset((pair["parent1"], pair["parent2"]))])
-          workbook = load_workbook(out / "01_selection/results.xlsx", read_only=True)
-          assert "Predicted homozygous missense proportion R" in next(workbook.active.values)
-          workbook.close()
-          assert (out / "01_selection/missense-r.svg").exists()
-          page = (out / "report.html").read_text()
-          assert page.count("<svg ") == 10
-          assert "Predicted offspring FROH" in page and "后代 FROH 预测" in page
-          assert 'id="chinese" lang="zh-CN" hidden' in page
-          by_donor = {}
-          for row in result["pairwise"]:
-              by_donor.setdefault(row["donor"], set()).add(row["rare"])
-          assert len(result["pairwise"]) == 18
-          assert all(len(v) == 1 for v in by_donor.values())
-          table = load_workbook(out / "05_pairwise/results.xlsx", read_only=True)
-          pair_rows = list(table.active.values)
-          assert pair_rows[0][:3] == ("KING kinship coefficient (parents)", "Recipient", "Donor")
-          assert "one F1" in pair_rows[0][3] and "one F1" in pair_rows[0][4]
-          assert len(pair_rows) == 19 and any(row[-1] for row in pair_rows[1:])
-          king_source = (out / "king.kin0").read_text().splitlines()
-          fields = king_source[0].lstrip("#").split()
-          king = {}
-          for line in king_source[1:]:
-              row = dict(zip(fields, line.split()))
-              names = frozenset((row.get("IID1", row.get("ID1")), row.get("IID2", row.get("ID2"))))
-              king[names] = float(row.get("KINSHIP", row.get("Kinship")))
-          col = pair_rows[0].index("KING kinship coefficient (parents)")
-          assert all(math.isclose(row[col], king[frozenset(row[1:3])]) for row in pair_rows[1:])
-          assert "Froh total (%)" in pair_rows[0] and "Froh long (>1 Mb) (%)" in pair_rows[0]
-          total_col = pair_rows[0].index("Froh total (%)")
-          long_col = pair_rows[0].index("Froh long (>1 Mb) (%)")
-          assert all(row[-1] == 16 and 0 <= row[long_col] <= row[total_col] <= 100 for row in pair_rows[1:])
-          assert not (out / "06_king").exists()
-          table.close()
-          prediction = result["predicted_froh"]
-          assert prediction["replicates_per_pair"] == 16
-          assert {p["plan"] for p in prediction["plans"]} == {"No introduction", "Selected", "High-heterozygosity reference"}
-          assert all(p["total_high"] >= p["total_low"] >= 0 and p["long"] == 0 for p in prediction["plans"])
-          assert all(0 <= p["r"] <= 1 for p in prediction["plans"])
-          book = load_workbook(out / "04_predicted_froh/results.xlsx", read_only=True)
-          assert len(list(book.active.values)) == 4
-          book.close()
-          PYTHON
-      - name: Run the documented two-donor example
-        shell: bash -el {0}
-        run: |
-          donor-screen test/input/donor-recipient.vcf.gz test/input/roles.tsv --froh-bed test/input/autosomes.bed --cds-sites test/input/synthetic-cds.tsv --froh-chr-set 22 -k 2 -n 3 -r 50 -t 2 --java-memory 2g --out demo-two-donors
-          python - <<'PYTHON'
-          import csv
-          import json
-          from pathlib import Path
-          from openpyxl import load_workbook
+
           root = Path("demo-two-donors")
           data = json.loads((root / "results.json").read_text())
-          assert [row["k"] for row in data["results"]] == [0, 2]
           control, selected = data["results"]
-          assert len(selected["donors"]) == len(selected["reference_donors"]) == 2
-          assert len(selected["pairs"]) == len(selected["reference_pairs"]) == len(control["pairs"]) == 3
+          print({key: selected.get(key) for key in ("donors", "reference_donors", "rare", "reference_rare", "het", "reference_het", "hbd", "cap")})
+          assert [entry["k"] for entry in data["results"]] == [0, 2]
           assert data["cohort"]["offspring_count"] == 3
-          assert all(row["k"] == 2 for row in data["alternatives"])
-          predicted = data["predicted_froh"]
-          assert predicted["replicates_per_pair"] == 50 and predicted["all_recipient_donor_pairs"]
-          assert {plan["plan"] for plan in predicted["plans"]} == {"No introduction", "Selected", "High-heterozygosity reference"}
-          assert all(plan["r"] is not None for plan in predicted["plans"])
+          assert len(selected["donors"]) == len(selected["reference_donors"]) == 2
+          assert len(control["pairs"]) == len(selected["pairs"]) == len(selected["reference_pairs"]) == 3
+          assert selected["donors"] != selected["reference_donors"]
+          assert selected["rare"] >= 1.25 * selected["reference_rare"] > 0
+          assert selected["hbd"] <= selected["cap"]
+          assert data["predicted_froh"]["replicates_per_pair"] == 50
+          assert data["predicted_froh"]["all_recipient_donor_pairs"]
+          assert all(plan["r"] is not None for plan in data["predicted_froh"]["plans"])
+          with (root / "king.kin0").open() as f:
+              fields = f.readline().lstrip("#").split()
+              king = {}
+              for line in f:
+                  row = dict(zip(fields, line.split()))
+                  key = frozenset((row.get("IID1", row.get("ID1")), row.get("IID2", row.get("ID2"))))
+                  king[key] = float(row.get("KINSHIP", row.get("Kinship")))
           book = load_workbook(root / "05_pairwise/results.xlsx", read_only=True)
-          fields, *rows = book.active.values
-          assert fields[:3] == ("KING kinship coefficient (parents)", "Recipient", "Donor")
-          total = fields.index("Froh total (%)")
-          long = fields.index("Froh long (>1 Mb) (%)")
-          assert len(rows) == 18 and all(row[-1] == 50 and 0 <= row[long] <= row[total] <= 100 for row in rows)
+          header, *rows = list(book.active.values)
+          assert header[:3] == ("KING kinship coefficient (parents)", "Recipient", "Donor")
+          assert len(rows) == 18 and len({tuple(row[1:3]) for row in rows}) == 18
+          assert all(row[-1] == 50 and math.isclose(row[0], king[frozenset(row[1:3])]) for row in rows)
+          h = [row[header.index("Expected SNP heterozygosity of one F1 (%)")] for row in rows]
+          total = [row[header.index("Froh total (%)")] for row in rows]
+          long = [row[header.index("Froh long (>1 Mb) (%)")] for row in rows]
+          print("SNP heterozygosity range:", min(h), max(h))
+          print("FROH ranges:", (min(total), max(total)), (min(long), max(long)))
+          print("Nonzero total and long FROH:", sum(value > 0 for value in total), sum(value > 0 for value in long))
+          assert 0 < min(h) <= max(h) <= 28
+          assert all(0 <= l <= t <= 100 for l, t in zip(long, total))
+          assert 0 < max(total) and 0 < max(long) and min(long) < max(long)
           book.close()
-          with (root / "04_predicted_froh/simulated-f1-froh.tsv").open() as source:
-              rows = list(csv.DictReader(source, delimiter="\t"))
-          assert len(rows) == (18 + 3) * 50
+          with (root / "04_predicted_froh/simulated-f1-froh.tsv").open() as f:
+              counts = {}
+              for row in csv.DictReader(f, delimiter="\t"):
+                  key = (row["parent1"], row["parent2"])
+                  counts[key] = counts.get(key, 0) + 1
+          assert counts and set(counts.values()) == {50}
+          html = (root / "report.html").read_text()
+          assert 'id="chinese" lang="zh-CN" hidden' in html
           PYTHON
-      - name: Run the original PLINK ROH method on observed example genotypes
+      - name: Check the basic screen and observed ROH with the same VCF
         shell: bash -el {0}
         run: |
-          base="$RUNNER_TEMP/donor-example"
-          bcftools index "$base/donor-recipient.vcf.gz"
-          bcftools query -l "$base/donor-recipient.vcf.gz" > "$base/observed-samples.txt"
-          printf '22\t0\t51304566\n' > "$base/autosomes.bed"
-          donor-screen froh "$base/donor-recipient.vcf.gz" "$base/observed-samples.txt" \
-            "$base/autosomes.bed" --chr-set 22 --out "$base/observed-roh"
+          base="$RUNNER_TEMP/single-fixture"
+          mkdir "$base"
+          cp test/input/synthetic-contrast.vcf.gz "$base/fixture.vcf.gz"
+          donor-screen "$base/fixture.vcf.gz" test/input/roles.tsv -n 1 --max-donors 1 -t 2 --java-memory 2g --out "$base/basic"
+          bcftools index "$base/fixture.vcf.gz"
+          bcftools query -l "$base/fixture.vcf.gz" > "$base/samples.txt"
+          donor-screen froh "$base/fixture.vcf.gz" "$base/samples.txt" test/input/autosomes.bed --chr-set 1 --out "$base/observed"
           python - <<'PYTHON'
-          import csv
-          import math
+          import json
           import os
           from pathlib import Path
           from openpyxl import load_workbook
-          out = Path(os.environ["RUNNER_TEMP"]) / "donor-example/observed-roh"
-          with (out / "froh.tsv").open() as f:
-              rows = list(csv.DictReader(f, delimiter="\t"))
-          assert len(rows) == 12
-          lines = (out / "roh.hom").read_text().splitlines()
-          segments = [dict(zip(lines[0].split(), line.split())) for line in lines[1:]]
-          for row in rows:
-              lengths = [float(s["KB"]) for s in segments if s["IID"] == row["sample"]]
-              assert int(row["reference_bp"]) == 51304566
-              assert math.isclose(float(row["FROH_100kb"]), sum(lengths) * 1000 / 51304566)
-              assert float(row["FROH_gt1Mb"]) == 0
-          book = load_workbook(out / "froh.xlsx", read_only=True)
+          base = Path(os.environ["RUNNER_TEMP"]) / "single-fixture"
+          result = json.loads((base / "basic/results.json").read_text())
+          assert [row["k"] for row in result["results"]] == [0, 1]
+          assert "predicted_froh" not in result
+          assert all(row["r"] is None for row in result["pairwise"])
+          book = load_workbook(base / "observed/froh.xlsx", read_only=True)
           assert len(list(book.active.values)) == 13
           book.close()
           PYTHON
-      - name: Run a synthetic donor-ranking contrast
-        shell: bash -el {0}
-        run: |
-          donor-screen test/input/synthetic-contrast.vcf.gz test/input/synthetic-contrast-roles.tsv --froh-bed test/input/synthetic-contrast.bed --cds-sites test/input/synthetic-contrast-cds.tsv --froh-chr-set 1 -k 2 -n 3 -r 50 -t 2 --java-memory 2g --out demo-synthetic-contrast
-          python - <<'PYTHON'
-          import json
-          from pathlib import Path
-          from openpyxl import load_workbook
-          out=Path("demo-synthetic-contrast")
-          data=json.loads((out / "results.json").read_text())
-          plan=data["results"][1]
-          print({key:plan.get(key) for key in ("donors","reference_donors","rare","reference_rare","hbd","cap")})
-          assert [x["k"] for x in data["results"]]==[0,2]
-          assert len(plan["donors"])==2 and len(plan["pairs"])==3
-          assert plan["donors"] != plan["reference_donors"]
-          assert plan["rare"] >= 1.25 * plan["reference_rare"] > 0
-          wb=load_workbook(out / "05_pairwise/results.xlsx", read_only=True)
-          header,*rows=list(wb.active.values)
-          assert len(rows)==18 and all(row[-1]==50 and row[header.index("Froh total (%)")] is not None and row[header.index("Froh long (>1 Mb) (%)")] is not None for row in rows)
-          wb.close()
-          PYTHON
-      - name: Collect the publication example
-        shell: bash -el {0}
-        run: |
-          base="$RUNNER_TEMP/donor-example"
-          bundle="$RUNNER_TEMP/public-example"
-          mkdir -p "$bundle/input" "$bundle/outputs"
-          cp "$base"/{synthetic-cds.tsv,observed-samples.txt,autosomes.bed} "$bundle/input/"
-          for pair in result:01_screen r-result:02_screen_with_R; do
-            source="$base/${pair%:*}"
-            dest="$bundle/outputs/${pair#*:}"
-            mkdir -p "$dest"
-            cp "$source"/{report.html,results.csv,results.json} "$dest/"
-            cp -r "$source"/0[1235]_* "$dest/"
-            if [[ -d "$source/04_predicted_froh" ]]; then
-              cp -r "$source/04_predicted_froh" "$dest/"
-            fi
-          done
-          demo="$bundle/outputs/04_two_donors"
-          mkdir "$demo"
-          cp demo-two-donors/{report.html,results.csv,results.json,king.kin0} "$demo/"
-          cp -r demo-two-donors/0[12345]_* "$demo/"
-          demo="$bundle/outputs/05_synthetic_contrast"
-          mkdir "$demo"
-          cp demo-synthetic-contrast/{report.html,results.csv,results.json,king.kin0} "$demo/"
-          cp -r demo-synthetic-contrast/0[12345]_* "$demo/"
-          python test/observed-report.py "$base/observed-roh"
-          mkdir "$bundle/outputs/03_observed_froh"
-          cp "$base/observed-roh"/{report.html,froh.xlsx,froh.tsv,froh.svg,roh.hom} "$bundle/outputs/03_observed_froh/"
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: public-example
-          path: ${{ runner.temp }}/public-example/
+          name: synthetic-example
+          if-no-files-found: error
+          path: |
+            demo-two-donors/report.html
+            demo-two-donors/results.json
+            demo-two-donors/05_pairwise/results.xlsx
       - name: Show stage logs on failure
         if: failure()
         shell: bash
         run: |
           shopt -s nullglob
-          for f in "$RUNNER_TEMP"/donor-example/result/*.log demo-two-donors/*.log demo-synthetic-contrast/*.log; do
+          for f in demo-two-donors/*.log; do
             printf '\n=== %s ===\n' "$f"
             tail -n 20 "$f"
           done

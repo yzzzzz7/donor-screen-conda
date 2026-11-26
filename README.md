@@ -14,25 +14,19 @@ donor-screen --help
 
 Installation fetches PLINK, bcftools, Java and R dependencies, along with the required Beagle and RZooRoH versions. KING is provided by PLINK 2. The [official Bioconda submission](https://github.com/bioconda/bioconda-recipes/pull/72231) is under review. See the [Linux installation test](https://github.com/yzzzzz7/donor-screen-conda/actions/runs/45801557968).
 
-## Copy-and-run example: two donors, three F1 slots
+## Copy-and-run synthetic example
 
-After installing donor-screen 0.2.9, open a terminal in this repository's root and copy the entire command. It uses the files in [test/input/](test/input/) and creates a new output directory named `demo-two-donors`.
+After installing donor-screen 0.2.9, run this command from the repository root. It uses one synthetic VCF and plans **2 donors and 3 F1 slots**, with **50 simulated F1 per pair** for FROH.
 
 ```bash
-donor-screen test/input/donor-recipient.vcf.gz test/input/roles.tsv --froh-bed test/input/autosomes.bed --cds-sites test/input/synthetic-cds.tsv --froh-chr-set 22 -k 2 -n 3 -r 50 -t 2 --java-memory 2g --out demo-two-donors
+donor-screen test/input/synthetic-contrast.vcf.gz test/input/roles.tsv --froh-bed test/input/autosomes.bed --cds-sites test/input/synthetic-cds.tsv --froh-chr-set 1 -k 2 -n 3 -r 50 -t 2 --java-memory 2g --out demo-two-donors
 ```
 
-### Complete pairwise results
+**[Test VCF](test/input/synthetic-contrast.vcf.gz)** · **[Complete 18-pair Excel workbook](https://yzzzzz7.github.io/donor-screen-conda/05_pairwise/results.xlsx)** · [Bilingual report](https://yzzzzz7.github.io/donor-screen-conda/)
 
-**[Download the complete 18-pair Excel workbook](https://yzzzzz7.github.io/donor-screen-conda/04_two_donors/05_pairwise/results.xlsx)**
+Across the 18 pairs, expected F1 SNP heterozygosity ranges from **14.7% to 23.4%**. Total FROH is above zero in **18 pairs** and long FROH (>1 Mb) is above zero in **6 pairs**. The selected two-donor plan adds **650.0** expected rare alleles versus **147.5** for the high-heterozygosity reference.
 
-This is the software-generated pairwise output at `demo-two-donors/05_pairwise/results.xlsx`. It contains all **6 recipients × 3 candidate donors = 18 pairs**. The first three columns are **KING kinship coefficient**, **Recipient**, and **Donor**. Both FROH columns contain predictions based on **50 simulated F1 per pair**.
-
-The `-k 2` and `-n 3` options set the plan to **2 donors and 3 F1 slots**. The pairwise workbook includes all candidate donors.
-
-[View the selected plan and controls in the bilingual report](https://yzzzzz7.github.io/donor-screen-conda/04_two_donors/report.html) · [View the Linux test run](https://github.com/yzzzzz7/donor-screen-conda/actions/runs/45806224958)
-
-This example uses a short public chr22 VCF fragment and synthetic CDS annotations. Sample names follow their roles (for example, `Donor_01` and `Recipient_01`). See the [public sample ID mapping](test/input/sample-names.tsv).
+The fixture uses artificial genotypes and CDS labels. The complete pairwise workbook preserves all 18 pairs, with KING in the first column and both FROH columns filled.
 
 ## Run on your data
 
@@ -72,15 +66,3 @@ Donor count and F1 slots both support values from 1 to 3, with donor count at mo
 | `04_predicted_froh/` | Optional total and long FROH predictions for comparing the selected plan, the high-heterozygosity reference and the no-introduction control |
 
 For FROH measured from sequenced individuals, use `donor-screen froh --help`.
-
-### Synthetic donor-ranking example
-
-This separate example uses **artificial genotypes and CDS labels**. For the same two-donor quota, Donor_01, Donor_03 adds **650.0** expected rare alleles versus **165.0** for the high-heterozygosity reference (Donor_01, Donor_02).
-
-[Download all 18 pairwise results as Excel](https://yzzzzz7.github.io/donor-screen-conda/05_synthetic_contrast/05_pairwise/results.xlsx) · [Open the bilingual report](https://yzzzzz7.github.io/donor-screen-conda/05_synthetic_contrast/report.html) · [Reproduce the example](test/README.md#synthetic-donor-ranking-example)
-
-## Other public examples
-
-[Open the bilingual example report](https://yzzzzz7.github.io/donor-screen-conda/02_screen_with_R/report.html) · [Download the 18-pair Excel workbook](https://yzzzzz7.github.io/donor-screen-conda/02_screen_with_R/05_pairwise/results.xlsx)
-
-From a checkout of this repository, run `bash test/run-all.sh demo-run` after installation. The [test directory](test/) contains the inputs and commands. The example uses a short public chromosome 22 VCF fragment and synthetic CDS labels to demonstrate the workflow.

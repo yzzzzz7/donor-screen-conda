@@ -1,3 +1,0 @@
-﻿Donor count,Selected donors,Expected new rare alleles,Predicted offspring SNP heterozygosity,Predicted recent HBD,Predicted homozygous missense proportion R,Original three-metric selection,Selection with high-heterozygosity R limit,Selection with no-introduction R limit,Rationale
-0,,0,0.0634717039800995,2.9351860258869527e-09,0.5094641499550827,,,,The no-introduction control uses the feasible recipient-only pairings with the lowest recent HBD.
-2,Donor_01+Donor_03,54.5,0.07314987562189056,1.6372471073049331e-09,0.5258150309109442,Donor_01+Donor_03,Donor_01+Donor_03,No eligible combination,R is reported alongside the original ranking.
