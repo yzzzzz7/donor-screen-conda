@@ -25,7 +25,7 @@ jobs:
         shell: bash -el {0}
         run: |
           conda install -y -c conda-forge -c bioconda openpyxl
-          conda install -y -c https://raw.githubusercontent.com/yzzzzz7/donor-screen-conda/main -c conda-forge -c bioconda donor-screen=0.2.6
+          conda install -y -c https://raw.githubusercontent.com/yzzzzz7/donor-screen-conda/main -c conda-forge -c bioconda donor-screen=0.2.7
       - name: Run the packaged workflow and open all workbooks
         shell: bash -el {0}
         run: |
@@ -103,7 +103,16 @@ jobs:
               king[names] = float(row.get("KINSHIP", row.get("Kinship")))
           col = pair_rows[0].index("KING kinship coefficient (parents)")
           assert all(math.isclose(row[col], king[frozenset(row[:2])]) for row in pair_rows[1:])
+          assert pair_rows[0].index("Froh total (%)") >= 0
+          assert pair_rows[0].index("Froh long (>1 Mb) (%)") >= 0
+          assert sum(bool(row[-1]) for row in pair_rows[1:]) == 1
           table.close()
+          king_book = load_workbook(out / "06_king/results.xlsx", read_only=True)
+          king_rows = list(king_book.active.values)
+          assert king_rows[0] == ("Sample 1", "Sample 2", "KING kinship coefficient")
+          assert len(king_rows) == 67
+          assert all(math.isclose(c, king[frozenset((a,b))]) for a,b,c in king_rows[1:])
+          king_book.close()
           prediction = result["predicted_froh"]
           assert prediction["replicates_per_pair"] == 16
           assert {p["plan"] for p in prediction["plans"]} == {"No introduction", "Selected", "High-heterozygosity reference"}
@@ -155,7 +164,7 @@ jobs:
             dest="$bundle/outputs/${pair#*:}"
             mkdir -p "$dest"
             cp "$source"/{report.html,results.csv,results.json} "$dest/"
-            cp -r "$source"/0[1235]_* "$dest/"
+            cp -r "$source"/0[12356]_* "$dest/"
             if [[ -d "$source/04_predicted_froh" ]]; then
               cp -r "$source/04_predicted_froh" "$dest/"
             fi

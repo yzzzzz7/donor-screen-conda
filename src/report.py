@@ -145,8 +145,8 @@ PAIRWISE = {
     "rare": "Expected new rare alleles in one F1",
     "king": "KING kinship coefficient (parents)",
     "hbd": "Predicted recent HBD of one F1 (proportion)",
-    "total": "Mean total FROH of one F1 (%)",
-    "long": "Mean long FROH of one F1 (%)",
+    "total": "Froh total (%)",
+    "long": "Froh long (>1 Mb) (%)",
     "r": "Predicted homozygous missense R of one F1 (%)",
     "allowed": "Pairing allowed", "replicates": "Simulated F1 count",
 }
@@ -165,6 +165,24 @@ def write_pairwise(out, rows):
         total, long = (100 * mean(column) for column in zip(*values)) if values else (None, None)
         yield dict(row, het=row["het"] * 100, r=None if row["r"] is None else row["r"] * 100,
                    total=total, long=long, replicates=len(values))
+
+
+def write_king(out):
+    """Export every pair in the native KING table, with its signed coefficient."""
+    source = out / "king.kin0"
+    columns = {"first": "Sample 1", "second": "Sample 2", "king": "KING kinship coefficient"}
+    with source.open(encoding="utf-8") as stream:
+        header = stream.readline().lstrip("#").split()
+        rows = (dict(zip(header, line.split(), strict=True)) for line in stream if line.strip())
+        records = (
+            {"first": row.get("IID1", row.get("ID1")),
+             "second": row.get("IID2", row.get("ID2")),
+             "king": float(row.get("KINSHIP", row.get("Kinship")))}
+            for row in rows
+        )
+        destination = out / "06_king"
+        destination.mkdir()
+        write_xlsx(destination / "results.xlsx", columns, records)
 
 
 def write_report(out, *, extra_section=""):
@@ -256,8 +274,13 @@ An em dash indicates an unavailable or inapplicable value. The control introduce
         pairwise = (
             '<section><h2>Recipient–donor pairwise results</h2>'
             '<p>Each row is one recipient–donor pair. Heterozygosity and rare-allele gain describe one F1. '
-            'Blank FROH or R cells indicate unavailable results.</p>'
+            'FROH is shown for simulated pairs only. R requires CDS annotations.</p>'
             '<p><a href="05_pairwise/results.xlsx">Download Excel</a></p></section>'
         )
         page = page.replace("</html>", pairwise + "</html>")
+    if (out / "king.kin0").is_file():
+        write_king(out)
+        king = ('<section><h2>KING kinship</h2><p>'
+                '<a href="06_king/results.xlsx">Download Excel</a></p></section>')
+        page = page.replace("</html>", king + "</html>")
     (out / "report.html").write_text(bilingual(page), encoding="utf-8")

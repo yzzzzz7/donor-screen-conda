@@ -15,3 +15,5 @@ Use `--froh-bed` with whole-autosome BED rows (chromosome, zero, length) to pred
 Open `report.html` locally and use the **中文 / English** button to switch languages. The result tables and Excel workbooks are in English. The pairwise workbook at `05_pairwise/results.xlsx` includes one row per recipient and candidate donor. Its heterozygosity and rare-allele columns describe **one F1**, with rare-allele gain measured against the recipient population. At plan level, an allele counts once across all proposed F1. Pairwise R requires CDS input. Pairwise FROH appears for simulated pairings.
 
 Each pairwise row includes the original signed KING kinship coefficient for the two parents. The run root also contains the complete native PLINK 2 `king.kin0` table. KING is included in PLINK 2; no separate KING installation is needed.
+
+The complete KING Excel workbook is at `06_king/results.xlsx`. Pairwise FROH columns are filled only for simulated matings. Blank cells denote a mating without a FROH simulation.
