@@ -1,0 +1,1113 @@
+{
+  "version": "0.2",
+  "cohort": {
+    "name": "demo-two-donors",
+    "offspring_count": 3,
+    "het_sites": 8576,
+    "rare_sites": 111,
+    "candidates": [
+      "NA12812",
+      "NA12814",
+      "NA12815"
+    ],
+    "recipients": [
+      "NA06984",
+      "NA06986",
+      "NA07000",
+      "NA07048",
+      "NA07051",
+      "NA07347"
+    ],
+    "notes": [],
+    "missense_policy": "report"
+  },
+  "individuals": [
+    {
+      "sample": "NA06984",
+      "role": "recipient",
+      "cluster": "NA06984",
+      "h": 0.000583999416000584,
+      "novel_carried": 0
+    },
+    {
+      "sample": "NA06986",
+      "role": "recipient",
+      "cluster": "NA06986",
+      "h": 0.000446999553000447,
+      "novel_carried": 0
+    },
+    {
+      "sample": "NA07000",
+      "role": "recipient",
+      "cluster": "NA07000",
+      "h": 0.00045999954000046,
+      "novel_carried": 0
+    },
+    {
+      "sample": "NA07048",
+      "role": "recipient",
+      "cluster": "NA07048",
+      "h": 0.000561999438000562,
+      "novel_carried": 0
+    },
+    {
+      "sample": "NA07051",
+      "role": "recipient",
+      "cluster": "NA07051",
+      "h": 0.000493999506000494,
+      "novel_carried": 0
+    },
+    {
+      "sample": "NA07347",
+      "role": "recipient",
+      "cluster": "NA07347",
+      "h": 0.000678999321000679,
+      "novel_carried": 0
+    },
+    {
+      "sample": "NA12812",
+      "role": "candidate",
+      "cluster": "NA07357",
+      "h": 0.000655999344000656,
+      "novel_carried": 48
+    },
+    {
+      "sample": "NA12814",
+      "role": "candidate",
+      "cluster": "NA12814",
+      "h": 0.000435999564000436,
+      "novel_carried": 26
+    },
+    {
+      "sample": "NA12815",
+      "role": "candidate",
+      "cluster": "NA12815",
+      "h": 0.00052999947000053,
+      "novel_carried": 37
+    }
+  ],
+  "results": [
+    {
+      "k": 0,
+      "donors": [],
+      "rare": 0,
+      "cap": null,
+      "reference_donors": [],
+      "reason": "The no-introduction control uses the feasible recipient-only pairings with the lowest recent HBD.",
+      "pairs": [
+        {
+          "parent1": "NA06984",
+          "parent2": "NA06986",
+          "n_offspring": 1,
+          "hbd": 2.2887465039968223e-09,
+          "het": 0.0648320895522388,
+          "r": 0.5167498218104063,
+          "expected_missense": 181.25,
+          "expected_cds": 350.75
+        },
+        {
+          "parent1": "NA07000",
+          "parent2": "NA07347",
+          "n_offspring": 1,
+          "hbd": 2.7433343488750977e-09,
+          "het": 0.06244169776119403,
+          "r": 0.5092137592137592,
+          "expected_missense": 207.25,
+          "expected_cds": 407.0
+        },
+        {
+          "parent1": "NA07048",
+          "parent2": "NA07051",
+          "n_offspring": 1,
+          "hbd": 3.8712312176497716e-09,
+          "het": 0.06314132462686567,
+          "r": 0.5024288688410826,
+          "expected_missense": 181.0,
+          "expected_cds": 360.25
+        }
+      ],
+      "hbd": 2.967770690173897e-09,
+      "het": 0.0634717039800995,
+      "r": 0.5094641499550827,
+      "old_donors": [],
+      "old_pairs": [
+        {
+          "parent1": "NA06984",
+          "parent2": "NA06986",
+          "n_offspring": 1,
+          "hbd": 2.2887465039968223e-09,
+          "het": 0.0648320895522388,
+          "r": 0.5167498218104063,
+          "expected_missense": 181.25,
+          "expected_cds": 350.75
+        },
+        {
+          "parent1": "NA07000",
+          "parent2": "NA07347",
+          "n_offspring": 1,
+          "hbd": 2.7433343488750977e-09,
+          "het": 0.06244169776119403,
+          "r": 0.5092137592137592,
+          "expected_missense": 207.25,
+          "expected_cds": 407.0
+        },
+        {
+          "parent1": "NA07048",
+          "parent2": "NA07051",
+          "n_offspring": 1,
+          "hbd": 3.8712312176497716e-09,
+          "het": 0.06314132462686567,
+          "r": 0.5024288688410826,
+          "expected_missense": 181.0,
+          "expected_cds": 360.25
+        }
+      ],
+      "old_r": 0.5094641499550827,
+      "old_rare": 0,
+      "r_cap": null,
+      "r_policy": "report",
+      "change": "The no-introduction control uses the same pairings."
+    },
+    {
+      "k": 2,
+      "donors": [
+        "NA12812",
+        "NA12815"
+      ],
+      "rare": 54.5,
+      "pairs": [
+        {
+          "parent1": "NA12812",
+          "parent2": "NA07000",
+          "n_offspring": 1,
+          "hbd": 1.5293337744342309e-09,
+          "het": 0.08331389925373134,
+          "r": 0.5329795299469295,
+          "expected_missense": 175.75,
+          "expected_cds": 329.75
+        },
+        {
+          "parent1": "NA12812",
+          "parent2": "NA07051",
+          "n_offspring": 1,
+          "hbd": 4.391608444008343e-10,
+          "het": 0.07200326492537314,
+          "r": 0.5308291991495393,
+          "expected_missense": 187.25,
+          "expected_cds": 352.75
+        },
+        {
+          "parent1": "NA12815",
+          "parent2": "NA07048",
+          "n_offspring": 1,
+          "hbd": 2.93551374458137e-09,
+          "het": 0.06413246268656717,
+          "r": 0.5136363636363637,
+          "expected_missense": 197.75,
+          "expected_cds": 385.0
+        }
+      ],
+      "hbd": 1.634669454472145e-09,
+      "het": 0.07314987562189056,
+      "r": 0.5258150309109442,
+      "runner_up": [],
+      "runner_gap": null,
+      "gain_over_reference": 0.0,
+      "cap": 1.634669454472145e-09,
+      "eligible_count": 1,
+      "possible_count": 3,
+      "reference_donors": [
+        "NA12812",
+        "NA12815"
+      ],
+      "reference_pairs": [
+        {
+          "parent1": "NA12812",
+          "parent2": "NA07000",
+          "n_offspring": 1,
+          "hbd": 1.5293337744342309e-09,
+          "het": 0.08331389925373134,
+          "r": 0.5329795299469295,
+          "expected_missense": 175.75,
+          "expected_cds": 329.75
+        },
+        {
+          "parent1": "NA12812",
+          "parent2": "NA07051",
+          "n_offspring": 1,
+          "hbd": 4.391608444008343e-10,
+          "het": 0.07200326492537314,
+          "r": 0.5308291991495393,
+          "expected_missense": 187.25,
+          "expected_cds": 352.75
+        },
+        {
+          "parent1": "NA12815",
+          "parent2": "NA07048",
+          "n_offspring": 1,
+          "hbd": 2.93551374458137e-09,
+          "het": 0.06413246268656717,
+          "r": 0.5136363636363637,
+          "expected_missense": 197.75,
+          "expected_cds": 385.0
+        }
+      ],
+      "reference_rare": 54.5,
+      "reference_het": 0.07314987562189056,
+      "reference_r": 0.5258150309109442,
+      "old_donors": [
+        "NA12812",
+        "NA12815"
+      ],
+      "old_pairs": [
+        {
+          "parent1": "NA12812",
+          "parent2": "NA07000",
+          "n_offspring": 1,
+          "hbd": 1.5293337744342309e-09,
+          "het": 0.08331389925373134,
+          "r": 0.5329795299469295,
+          "expected_missense": 175.75,
+          "expected_cds": 329.75
+        },
+        {
+          "parent1": "NA12812",
+          "parent2": "NA07051",
+          "n_offspring": 1,
+          "hbd": 4.391608444008343e-10,
+          "het": 0.07200326492537314,
+          "r": 0.5308291991495393,
+          "expected_missense": 187.25,
+          "expected_cds": 352.75
+        },
+        {
+          "parent1": "NA12815",
+          "parent2": "NA07048",
+          "n_offspring": 1,
+          "hbd": 2.93551374458137e-09,
+          "het": 0.06413246268656717,
+          "r": 0.5136363636363637,
+          "expected_missense": 197.75,
+          "expected_cds": 385.0
+        }
+      ],
+      "old_r": 0.5258150309109442,
+      "old_rare": 54.5,
+      "r_cap": null,
+      "r_policy": "report",
+      "change": "R is reported alongside the original ranking.",
+      "min_r_for_original_score": 0.5258150309109442,
+      "r_intervals": [
+        {
+          "min_cap": 0.5258150309109442,
+          "donors": [
+            "NA12812",
+            "NA12815"
+          ],
+          "rare": 54.5
+        }
+      ],
+      "conditional": {
+        "reference": {
+          "k": 2,
+          "donors": [
+            "NA12812",
+            "NA12815"
+          ],
+          "rare": 54.5,
+          "pairs": [
+            {
+              "parent1": "NA12812",
+              "parent2": "NA07000",
+              "n_offspring": 1,
+              "hbd": 1.5293337744342309e-09,
+              "het": 0.08331389925373134,
+              "r": 0.5329795299469295,
+              "expected_missense": 175.75,
+              "expected_cds": 329.75
+            },
+            {
+              "parent1": "NA12812",
+              "parent2": "NA07051",
+              "n_offspring": 1,
+              "hbd": 4.391608444008343e-10,
+              "het": 0.07200326492537314,
+              "r": 0.5308291991495393,
+              "expected_missense": 187.25,
+              "expected_cds": 352.75
+            },
+            {
+              "parent1": "NA12815",
+              "parent2": "NA07048",
+              "n_offspring": 1,
+              "hbd": 2.93551374458137e-09,
+              "het": 0.06413246268656717,
+              "r": 0.5136363636363637,
+              "expected_missense": 197.75,
+              "expected_cds": 385.0
+            }
+          ],
+          "hbd": 1.634669454472145e-09,
+          "het": 0.07314987562189056,
+          "r": 0.5258150309109442,
+          "old_donors": [
+            "NA12812",
+            "NA12815"
+          ],
+          "old_pairs": [
+            {
+              "parent1": "NA12812",
+              "parent2": "NA07000",
+              "n_offspring": 1,
+              "hbd": 1.5293337744342309e-09,
+              "het": 0.08331389925373134,
+              "r": 0.5329795299469295,
+              "expected_missense": 175.75,
+              "expected_cds": 329.75
+            },
+            {
+              "parent1": "NA12812",
+              "parent2": "NA07051",
+              "n_offspring": 1,
+              "hbd": 4.391608444008343e-10,
+              "het": 0.07200326492537314,
+              "r": 0.5308291991495393,
+              "expected_missense": 187.25,
+              "expected_cds": 352.75
+            },
+            {
+              "parent1": "NA12815",
+              "parent2": "NA07048",
+              "n_offspring": 1,
+              "hbd": 2.93551374458137e-09,
+              "het": 0.06413246268656717,
+              "r": 0.5136363636363637,
+              "expected_missense": 197.75,
+              "expected_cds": 385.0
+            }
+          ],
+          "old_r": 0.5258150309109442,
+          "old_rare": 54.5,
+          "r_cap": 0.5258150309109442,
+          "r_policy": "reference",
+          "change": "The original donors and pairings meet both limits."
+        },
+        "baseline": {
+          "k": 2,
+          "donors": [],
+          "pairs": [],
+          "r": null,
+          "hbd": null,
+          "het": null,
+          "rare": null,
+          "old_donors": [
+            "NA12812",
+            "NA12815"
+          ],
+          "old_pairs": [
+            {
+              "parent1": "NA12812",
+              "parent2": "NA07000",
+              "n_offspring": 1,
+              "hbd": 1.5293337744342309e-09,
+              "het": 0.08331389925373134,
+              "r": 0.5329795299469295,
+              "expected_missense": 175.75,
+              "expected_cds": 329.75
+            },
+            {
+              "parent1": "NA12812",
+              "parent2": "NA07051",
+              "n_offspring": 1,
+              "hbd": 4.391608444008343e-10,
+              "het": 0.07200326492537314,
+              "r": 0.5308291991495393,
+              "expected_missense": 187.25,
+              "expected_cds": 352.75
+            },
+            {
+              "parent1": "NA12815",
+              "parent2": "NA07048",
+              "n_offspring": 1,
+              "hbd": 2.93551374458137e-09,
+              "het": 0.06413246268656717,
+              "r": 0.5136363636363637,
+              "expected_missense": 197.75,
+              "expected_cds": 385.0
+            }
+          ],
+          "old_r": 0.5258150309109442,
+          "old_rare": 54.5,
+          "r_cap": 0.5094641499550827,
+          "r_policy": "baseline",
+          "change": "No combination meets both limits at this donor count."
+        }
+      },
+      "reason": "R is reported alongside the original ranking."
+    }
+  ],
+  "alternatives": [
+    {
+      "k": 2,
+      "donors": [
+        "NA12812",
+        "NA12814"
+      ],
+      "cap": 1.634669454472145e-09,
+      "pass": false,
+      "rare": null,
+      "hbd": 2.5200939076647243e-09,
+      "het": null,
+      "r_cap": null,
+      "pass3": false,
+      "r": null
+    },
+    {
+      "k": 2,
+      "donors": [
+        "NA12812",
+        "NA12815"
+      ],
+      "cap": 1.634669454472145e-09,
+      "pass": true,
+      "rare": 54.5,
+      "hbd": 1.634669454472145e-09,
+      "het": 0.07314987562189056,
+      "r_cap": null,
+      "pass3": true,
+      "r": 0.5258150309109442
+    },
+    {
+      "k": 2,
+      "donors": [
+        "NA12814",
+        "NA12815"
+      ],
+      "cap": 1.634669454472145e-09,
+      "pass": false,
+      "rare": null,
+      "hbd": 4.870483922122611e-09,
+      "het": null,
+      "r_cap": null,
+      "pass3": false,
+      "r": null
+    }
+  ],
+  "pairwise": [
+    {
+      "recipient": "NA06984",
+      "donor": "NA12812",
+      "het": 0.0748017723880597,
+      "rare": 24.0,
+      "hbd": 2.310786419469057e-09,
+      "king": -0.067637,
+      "r": 0.5373459028281363,
+      "allowed": true
+    },
+    {
+      "recipient": "NA06984",
+      "donor": "NA12814",
+      "het": 0.06856343283582089,
+      "rare": 13.0,
+      "hbd": 1.0363733401621587e-08,
+      "king": -0.263761,
+      "r": 0.5225102319236017,
+      "allowed": true
+    },
+    {
+      "recipient": "NA06984",
+      "donor": "NA12815",
+      "het": 0.061916977611940295,
+      "rare": 18.5,
+      "hbd": 1.2936426886487243e-08,
+      "king": 0.0235849,
+      "r": 0.49934296977660975,
+      "allowed": true
+    },
+    {
+      "recipient": "NA06986",
+      "donor": "NA12812",
+      "het": 0.07311100746268656,
+      "rare": 24.0,
+      "hbd": 8.916128976236616e-09,
+      "king": -0.285794,
+      "r": 0.5399583043780403,
+      "allowed": true
+    },
+    {
+      "recipient": "NA06986",
+      "donor": "NA12814",
+      "het": 0.06937966417910447,
+      "rare": 13.0,
+      "hbd": 1.2246686987432118e-07,
+      "king": -0.358372,
+      "r": 0.5327039784221174,
+      "allowed": true
+    },
+    {
+      "recipient": "NA06986",
+      "donor": "NA12815",
+      "het": 0.06477378731343283,
+      "rare": 18.5,
+      "hbd": 5.0270359380872234e-08,
+      "king": -0.196309,
+      "r": 0.5106382978723404,
+      "allowed": true
+    },
+    {
+      "recipient": "NA07000",
+      "donor": "NA12812",
+      "het": 0.08331389925373134,
+      "rare": 24.0,
+      "hbd": 1.5293337744342309e-09,
+      "king": -0.446739,
+      "r": 0.5329795299469295,
+      "allowed": true
+    },
+    {
+      "recipient": "NA07000",
+      "donor": "NA12814",
+      "het": 0.07853311567164178,
+      "rare": 13.0,
+      "hbd": 3.203893272758817e-08,
+      "king": -0.530963,
+      "r": 0.5199131064446053,
+      "allowed": true
+    },
+    {
+      "recipient": "NA07000",
+      "donor": "NA12815",
+      "het": 0.05288013059701493,
+      "rare": 18.5,
+      "hbd": 1.1732112956308669e-08,
+      "king": 0.0521739,
+      "r": 0.5036868973340897,
+      "allowed": true
+    },
+    {
+      "recipient": "NA07048",
+      "donor": "NA12812",
+      "het": 0.06733908582089553,
+      "rare": 24.0,
+      "hbd": 1.0025780364231096e-07,
+      "king": 0.0142349,
+      "r": 0.5342290467050543,
+      "allowed": true
+    },
+    {
+      "recipient": "NA07048",
+      "donor": "NA12814",
+      "het": 0.07147854477611941,
+      "rare": 13.0,
+      "hbd": 5.5917871041591085e-09,
+      "king": -0.333716,
+      "r": 0.5163043478260869,
+      "allowed": true
+    },
+    {
+      "recipient": "NA07048",
+      "donor": "NA12815",
+      "het": 0.06413246268656717,
+      "rare": 18.5,
+      "hbd": 2.93551374458137e-09,
+      "king": -0.0226415,
+      "r": 0.5136363636363637,
+      "allowed": true
+    },
+    {
+      "recipient": "NA07051",
+      "donor": "NA12812",
+      "het": 0.07200326492537314,
+      "rare": 24.0,
+      "hbd": 4.391608444008343e-10,
+      "king": -0.168016,
+      "r": 0.5308291991495393,
+      "allowed": true
+    },
+    {
+      "recipient": "NA07051",
+      "donor": "NA12814",
+      "het": 0.07386893656716417,
+      "rare": 13.0,
+      "hbd": 1.1538720153157366e-08,
+      "king": -0.419725,
+      "r": 0.5261221486387049,
+      "allowed": true
+    },
+    {
+      "recipient": "NA07051",
+      "donor": "NA12815",
+      "het": 0.07550139925373134,
+      "rare": 18.5,
+      "hbd": 1.3122046201648749e-09,
+      "king": -0.29251,
+      "r": 0.5051060487038491,
+      "allowed": true
+    },
+    {
+      "recipient": "NA07347",
+      "donor": "NA12812",
+      "het": 0.07147854477611941,
+      "rare": 24.0,
+      "hbd": 5.415174381541395e-08,
+      "king": 0.074314,
+      "r": 0.5335463258785943,
+      "allowed": true
+    },
+    {
+      "recipient": "NA07347",
+      "donor": "NA12814",
+      "het": 0.07590951492537314,
+      "rare": 13.0,
+      "hbd": 3.6171196736100136e-08,
+      "king": -0.353784,
+      "r": 0.517358747447243,
+      "allowed": true
+    },
+    {
+      "recipient": "NA07347",
+      "donor": "NA12815",
+      "het": 0.06489039179104478,
+      "rare": 18.5,
+      "hbd": 1.6580882882688588e-08,
+      "king": 0.020283,
+      "r": 0.51125,
+      "allowed": true
+    }
+  ],
+  "predicted_froh": {
+    "replicates_per_pair": 50,
+    "seed": 50483,
+    "all_recipient_donor_pairs": true,
+    "recombination_cm_per_mb": 1,
+    "chromosomes": [
+      "22"
+    ],
+    "plink_chr_set": 22,
+    "bed_sha256": "655f060b29cdb8fd20a9d6a000a3a0c9dc4ca3bfd78367ccb9bf2fb52a797dc2",
+    "plans": [
+      {
+        "k": 0,
+        "donors": [],
+        "rare": 0,
+        "cap": null,
+        "reference_donors": [],
+        "reason": "The no-introduction control uses the feasible recipient-only pairings with the lowest recent HBD.",
+        "pairs": [
+          {
+            "parent1": "NA06984",
+            "parent2": "NA06986",
+            "n_offspring": 1,
+            "hbd": 2.2887465039968223e-09,
+            "het": 0.0648320895522388,
+            "r": 0.5167498218104063,
+            "expected_missense": 181.25,
+            "expected_cds": 350.75
+          },
+          {
+            "parent1": "NA07000",
+            "parent2": "NA07347",
+            "n_offspring": 1,
+            "hbd": 2.7433343488750977e-09,
+            "het": 0.06244169776119403,
+            "r": 0.5092137592137592,
+            "expected_missense": 207.25,
+            "expected_cds": 407.0
+          },
+          {
+            "parent1": "NA07048",
+            "parent2": "NA07051",
+            "n_offspring": 1,
+            "hbd": 3.8712312176497716e-09,
+            "het": 0.06314132462686567,
+            "r": 0.5024288688410826,
+            "expected_missense": 181.0,
+            "expected_cds": 360.25
+          }
+        ],
+        "hbd": 2.967770690173897e-09,
+        "het": 0.0634717039800995,
+        "r": 0.5094641499550827,
+        "old_donors": [],
+        "old_pairs": [
+          {
+            "parent1": "NA06984",
+            "parent2": "NA06986",
+            "n_offspring": 1,
+            "hbd": 2.2887465039968223e-09,
+            "het": 0.0648320895522388,
+            "r": 0.5167498218104063,
+            "expected_missense": 181.25,
+            "expected_cds": 350.75
+          },
+          {
+            "parent1": "NA07000",
+            "parent2": "NA07347",
+            "n_offspring": 1,
+            "hbd": 2.7433343488750977e-09,
+            "het": 0.06244169776119403,
+            "r": 0.5092137592137592,
+            "expected_missense": 207.25,
+            "expected_cds": 407.0
+          },
+          {
+            "parent1": "NA07048",
+            "parent2": "NA07051",
+            "n_offspring": 1,
+            "hbd": 3.8712312176497716e-09,
+            "het": 0.06314132462686567,
+            "r": 0.5024288688410826,
+            "expected_missense": 181.0,
+            "expected_cds": 360.25
+          }
+        ],
+        "old_r": 0.5094641499550827,
+        "old_rare": 0,
+        "r_cap": null,
+        "r_policy": "report",
+        "change": "The no-introduction control uses the same pairings.",
+        "plan": "No introduction",
+        "total": 0.005086497239511456,
+        "long": 0.0,
+        "total_low": 0.0032841737387142764,
+        "total_high": 0.00703379662802982,
+        "long_low": 0.0,
+        "long_high": 0.0
+      },
+      {
+        "k": 2,
+        "donors": [
+          "NA12812",
+          "NA12815"
+        ],
+        "rare": 54.5,
+        "pairs": [
+          {
+            "parent1": "NA12812",
+            "parent2": "NA07000",
+            "n_offspring": 1,
+            "hbd": 1.5293337744342309e-09,
+            "het": 0.08331389925373134,
+            "r": 0.5329795299469295,
+            "expected_missense": 175.75,
+            "expected_cds": 329.75
+          },
+          {
+            "parent1": "NA12812",
+            "parent2": "NA07051",
+            "n_offspring": 1,
+            "hbd": 4.391608444008343e-10,
+            "het": 0.07200326492537314,
+            "r": 0.5308291991495393,
+            "expected_missense": 187.25,
+            "expected_cds": 352.75
+          },
+          {
+            "parent1": "NA12815",
+            "parent2": "NA07048",
+            "n_offspring": 1,
+            "hbd": 2.93551374458137e-09,
+            "het": 0.06413246268656717,
+            "r": 0.5136363636363637,
+            "expected_missense": 197.75,
+            "expected_cds": 385.0
+          }
+        ],
+        "hbd": 1.634669454472145e-09,
+        "het": 0.07314987562189056,
+        "r": 0.5258150309109442,
+        "runner_up": [],
+        "runner_gap": null,
+        "gain_over_reference": 0.0,
+        "cap": 1.634669454472145e-09,
+        "eligible_count": 1,
+        "possible_count": 3,
+        "reference_donors": [
+          "NA12812",
+          "NA12815"
+        ],
+        "reference_pairs": [
+          {
+            "parent1": "NA12812",
+            "parent2": "NA07000",
+            "n_offspring": 1,
+            "hbd": 1.5293337744342309e-09,
+            "het": 0.08331389925373134,
+            "r": 0.5329795299469295,
+            "expected_missense": 175.75,
+            "expected_cds": 329.75
+          },
+          {
+            "parent1": "NA12812",
+            "parent2": "NA07051",
+            "n_offspring": 1,
+            "hbd": 4.391608444008343e-10,
+            "het": 0.07200326492537314,
+            "r": 0.5308291991495393,
+            "expected_missense": 187.25,
+            "expected_cds": 352.75
+          },
+          {
+            "parent1": "NA12815",
+            "parent2": "NA07048",
+            "n_offspring": 1,
+            "hbd": 2.93551374458137e-09,
+            "het": 0.06413246268656717,
+            "r": 0.5136363636363637,
+            "expected_missense": 197.75,
+            "expected_cds": 385.0
+          }
+        ],
+        "reference_rare": 54.5,
+        "reference_het": 0.07314987562189056,
+        "reference_r": 0.5258150309109442,
+        "old_donors": [
+          "NA12812",
+          "NA12815"
+        ],
+        "old_pairs": [
+          {
+            "parent1": "NA12812",
+            "parent2": "NA07000",
+            "n_offspring": 1,
+            "hbd": 1.5293337744342309e-09,
+            "het": 0.08331389925373134,
+            "r": 0.5329795299469295,
+            "expected_missense": 175.75,
+            "expected_cds": 329.75
+          },
+          {
+            "parent1": "NA12812",
+            "parent2": "NA07051",
+            "n_offspring": 1,
+            "hbd": 4.391608444008343e-10,
+            "het": 0.07200326492537314,
+            "r": 0.5308291991495393,
+            "expected_missense": 187.25,
+            "expected_cds": 352.75
+          },
+          {
+            "parent1": "NA12815",
+            "parent2": "NA07048",
+            "n_offspring": 1,
+            "hbd": 2.93551374458137e-09,
+            "het": 0.06413246268656717,
+            "r": 0.5136363636363637,
+            "expected_missense": 197.75,
+            "expected_cds": 385.0
+          }
+        ],
+        "old_r": 0.5258150309109442,
+        "old_rare": 54.5,
+        "r_cap": null,
+        "r_policy": "report",
+        "change": "R is reported alongside the original ranking.",
+        "min_r_for_original_score": 0.5258150309109442,
+        "r_intervals": [
+          {
+            "min_cap": 0.5258150309109442,
+            "donors": [
+              "NA12812",
+              "NA12815"
+            ],
+            "rare": 54.5
+          }
+        ],
+        "conditional": {
+          "reference": {
+            "k": 2,
+            "donors": [
+              "NA12812",
+              "NA12815"
+            ],
+            "rare": 54.5,
+            "pairs": [
+              {
+                "parent1": "NA12812",
+                "parent2": "NA07000",
+                "n_offspring": 1,
+                "hbd": 1.5293337744342309e-09,
+                "het": 0.08331389925373134,
+                "r": 0.5329795299469295,
+                "expected_missense": 175.75,
+                "expected_cds": 329.75
+              },
+              {
+                "parent1": "NA12812",
+                "parent2": "NA07051",
+                "n_offspring": 1,
+                "hbd": 4.391608444008343e-10,
+                "het": 0.07200326492537314,
+                "r": 0.5308291991495393,
+                "expected_missense": 187.25,
+                "expected_cds": 352.75
+              },
+              {
+                "parent1": "NA12815",
+                "parent2": "NA07048",
+                "n_offspring": 1,
+                "hbd": 2.93551374458137e-09,
+                "het": 0.06413246268656717,
+                "r": 0.5136363636363637,
+                "expected_missense": 197.75,
+                "expected_cds": 385.0
+              }
+            ],
+            "hbd": 1.634669454472145e-09,
+            "het": 0.07314987562189056,
+            "r": 0.5258150309109442,
+            "old_donors": [
+              "NA12812",
+              "NA12815"
+            ],
+            "old_pairs": [
+              {
+                "parent1": "NA12812",
+                "parent2": "NA07000",
+                "n_offspring": 1,
+                "hbd": 1.5293337744342309e-09,
+                "het": 0.08331389925373134,
+                "r": 0.5329795299469295,
+                "expected_missense": 175.75,
+                "expected_cds": 329.75
+              },
+              {
+                "parent1": "NA12812",
+                "parent2": "NA07051",
+                "n_offspring": 1,
+                "hbd": 4.391608444008343e-10,
+                "het": 0.07200326492537314,
+                "r": 0.5308291991495393,
+                "expected_missense": 187.25,
+                "expected_cds": 352.75
+              },
+              {
+                "parent1": "NA12815",
+                "parent2": "NA07048",
+                "n_offspring": 1,
+                "hbd": 2.93551374458137e-09,
+                "het": 0.06413246268656717,
+                "r": 0.5136363636363637,
+                "expected_missense": 197.75,
+                "expected_cds": 385.0
+              }
+            ],
+            "old_r": 0.5258150309109442,
+            "old_rare": 54.5,
+            "r_cap": 0.5258150309109442,
+            "r_policy": "reference",
+            "change": "The original donors and pairings meet both limits."
+          },
+          "baseline": {
+            "k": 2,
+            "donors": [],
+            "pairs": [],
+            "r": null,
+            "hbd": null,
+            "het": null,
+            "rare": null,
+            "old_donors": [
+              "NA12812",
+              "NA12815"
+            ],
+            "old_pairs": [
+              {
+                "parent1": "NA12812",
+                "parent2": "NA07000",
+                "n_offspring": 1,
+                "hbd": 1.5293337744342309e-09,
+                "het": 0.08331389925373134,
+                "r": 0.5329795299469295,
+                "expected_missense": 175.75,
+                "expected_cds": 329.75
+              },
+              {
+                "parent1": "NA12812",
+                "parent2": "NA07051",
+                "n_offspring": 1,
+                "hbd": 4.391608444008343e-10,
+                "het": 0.07200326492537314,
+                "r": 0.5308291991495393,
+                "expected_missense": 187.25,
+                "expected_cds": 352.75
+              },
+              {
+                "parent1": "NA12815",
+                "parent2": "NA07048",
+                "n_offspring": 1,
+                "hbd": 2.93551374458137e-09,
+                "het": 0.06413246268656717,
+                "r": 0.5136363636363637,
+                "expected_missense": 197.75,
+                "expected_cds": 385.0
+              }
+            ],
+            "old_r": 0.5258150309109442,
+            "old_rare": 54.5,
+            "r_cap": 0.5094641499550827,
+            "r_policy": "baseline",
+            "change": "No combination meets both limits at this donor count."
+          }
+        },
+        "reason": "R is reported alongside the original ranking.",
+        "plan": "Selected",
+        "total": 0.004855480894234637,
+        "long": 0.0,
+        "total_low": 0.002898788612044134,
+        "total_high": 0.00664234397772705,
+        "long_low": 0.0,
+        "long_high": 0.0
+      },
+      {
+        "plan": "High-heterozygosity reference",
+        "k": 2,
+        "donors": [
+          "NA12812",
+          "NA12815"
+        ],
+        "pairs": [
+          {
+            "parent1": "NA12812",
+            "parent2": "NA07000",
+            "n_offspring": 1,
+            "hbd": 1.5293337744342309e-09,
+            "het": 0.08331389925373134,
+            "r": 0.5329795299469295,
+            "expected_missense": 175.75,
+            "expected_cds": 329.75
+          },
+          {
+            "parent1": "NA12812",
+            "parent2": "NA07051",
+            "n_offspring": 1,
+            "hbd": 4.391608444008343e-10,
+            "het": 0.07200326492537314,
+            "r": 0.5308291991495393,
+            "expected_missense": 187.25,
+            "expected_cds": 352.75
+          },
+          {
+            "parent1": "NA12815",
+            "parent2": "NA07048",
+            "n_offspring": 1,
+            "hbd": 2.93551374458137e-09,
+            "het": 0.06413246268656717,
+            "r": 0.5136363636363637,
+            "expected_missense": 197.75,
+            "expected_cds": 385.0
+          }
+        ],
+        "rare": 54.5,
+        "het": 0.07314987562189056,
+        "hbd": 1.634669454472145e-09,
+        "r": 0.5258150309109442,
+        "total": 0.004855480894234637,
+        "long": 0.0,
+        "total_low": 0.002898788612044134,
+        "total_high": 0.00664234397772705,
+        "long_low": 0.0,
+        "long_high": 0.0
+      }
+    ]
+  }
+}

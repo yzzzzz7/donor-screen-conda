@@ -14,6 +14,26 @@ donor-screen --help
 
 Installation fetches PLINK, bcftools, Java and R dependencies, along with the required Beagle and RZooRoH versions. KING is provided by PLINK 2. The [official Bioconda submission](https://github.com/bioconda/bioconda-recipes/pull/72231) is under review. See the [Linux installation test](https://github.com/yzzzzz7/donor-screen-conda/actions/runs/45801557968).
 
+## Copy-and-run example: two donors, three F1 slots
+
+After installing donor-screen 0.2.9, open a terminal in this repository's root and copy the entire command. It uses the files in [test/input/](test/input/) and creates a new output directory named `demo-two-donors`.
+
+```bash
+donor-screen test/input/fragment.vcf.gz test/input/roles.tsv --froh-bed test/input/autosomes.bed --cds-sites test/input/synthetic-cds.tsv --froh-chr-set 22 -k 2 -n 3 -r 50 -t 2 --java-memory 2g --out demo-two-donors
+```
+
+The example evaluates exactly **2 donors** for **3 planned F1** and simulates **50 F1 per parental pair** to estimate FROH. All **18 recipient–donor pairs** have both FROH columns filled in the Excel workbook.
+
+| Plan | Donors | Expected new rare alleles | F1 SNP heterozygosity | Recent HBD (proportion) | Total FROH | Long FROH (>1 Mb) | R |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Selected | NA12812, NA12815 | 54.500 | 7.315% | 1.63e-09 | 0.486% | 0.000% | 52.582% |
+| High-heterozygosity reference | NA12812, NA12815 | 54.500 | 7.315% | 1.63e-09 | 0.486% | 0.000% | 52.582% |
+| No introduction | — | 0.000 | 6.347% | 2.97e-09 | 0.509% | 0.000% | 50.946% |
+
+[Open the English / Chinese report](https://yzzzzz7.github.io/donor-screen-conda/04_two_donors/report.html) · [Download the 18-pair Excel workbook](https://yzzzzz7.github.io/donor-screen-conda/04_two_donors/05_pairwise/results.xlsx) · [Download the plan comparison Excel workbook](https://yzzzzz7.github.io/donor-screen-conda/04_two_donors/04_predicted_froh/results.xlsx) · [View the Linux test run](https://github.com/yzzzzz7/donor-screen-conda/actions/runs/45806224958)
+
+This example uses a short public chr22 VCF fragment and synthetic CDS annotations. The results demonstrate the workflow.
+
 ## Run on your data
 
 Use a sorted, quality-filtered joint VCF of diploid biallelic SNPs and a tab-separated role sheet.
@@ -31,12 +51,7 @@ For the basic screen, which calculates expected rare-allele gain, offspring SNP 
 donor-screen joint.vcf.gz roles.tsv --out run1
 ```
 
-For a two-donor plan with three F1 slots, including predicted FROH and R:
-
-```bash
-donor-screen joint.vcf.gz roles.tsv --froh-bed autosomes.bed --cds-sites coding.tsv \
-  -k 2 -n 3 -r 50 -t 8 --out run2
-```
+To include FROH and R on your own data, replace the test paths in the copy-and-run command above with your files.
 
 | Option | What it controls |
 | --- | --- |
@@ -58,7 +73,7 @@ Donor count and F1 slots both support values from 1 to 3, with donor count at mo
 
 For FROH measured from sequenced individuals, use `donor-screen froh --help`.
 
-## Try the public example
+## Other public examples
 
 [Open the bilingual example report](https://yzzzzz7.github.io/donor-screen-conda/02_screen_with_R/report.html) · [Download the 18-pair Excel workbook](https://yzzzzz7.github.io/donor-screen-conda/02_screen_with_R/05_pairwise/results.xlsx)
 
