@@ -133,7 +133,7 @@ def html_table(columns, rows):
     return f"<div class='table'><table><thead><tr>{header}</tr></thead><tbody>{''.join(body)}</tbody></table></div>"
 
 
-def write_report(out):
+def write_report(out, *, extra_section=""):
     data = json.loads((out / "results.json").read_text(encoding="utf-8"))
     results = data["results"]
     cohort = data["cohort"]
@@ -213,6 +213,6 @@ svg{{display:block;width:100%;max-width:760px;margin:12px 0}} a{{color:#245d91}}
 <p>Heterozygosity and HBD are proportions in the tables and percentages in the plots.
 An em dash indicates an unavailable or inapplicable value. The control introduces zero donors.</p>
 <p><a href="results.csv">Original results CSV</a> · <a href="results.json">Original results JSON</a></p>
-{method}{"".join(sections)}
+{method}{"".join(sections)}{extra_section}
 </html>"""
     (out / "report.html").write_text(page, encoding="utf-8")

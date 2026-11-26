@@ -75,3 +75,14 @@ donor-screen froh offspring.vcf.gz offspring.txt autosomes.bed --chr-set 22 --ou
 ```
 
 输出 `froh.xlsx`、`froh.tsv`、PLINK `roh.hom` 和运行日志。沿用研究的 PLINK 1.9 识别参数。总 FROH 为长度 ≥100 kb 的 ROH 总长除以 BED 染色体总长，长 FROH 采用严格 >1 Mb。未检出 ROH 的样本记为 0。比较亲本和后代时统一参考范围、VCF 过滤和 ROH 参数。此命令用于已测序个体，原供体筛选继续采用预测后代近期 HBD。
+
+## 配对前预测后代 FROH
+
+增加 `--froh-bed` 可在原筛选完成后，对入选方案、高杂合度对照和无引入对照模拟 F1。使用全常染色体 BED，每行依次为染色体名、0 和染色体长度。BED 与 VCF 的染色体名称和参考坐标须一致。结合 `--cds-sites` 时，报告并排展示五类指标。
+
+```bash
+donor-screen joint.vcf.gz roles.tsv --cds-sites coding.tsv --froh-bed autosomes.bed \
+  --froh-replicates 100 --out run-five
+```
+
+模拟复用分相亲本基因型，按 Haldane 模型和恒定 1 cM/Mb 重组率抽取双亲各一条重组单倍型。默认每个配对模拟 100 个 F1，随机种子为 50483。使用原 PLINK 1.9 方法计算 ≥100 kb 总 FROH 和 >1 Mb 长 FROH。报告对每个方案给出均值和模拟方案均值的第 2.5 和 97.5 百分位。`--froh-chr-set` 可设置 PLINK 常染色体数。输出见 `04_predicted_froh/` 和 `report.html`。模拟区间取决于输入位点覆盖、分相和重组假设。FROH 用于比较，沿用原有方案排序。

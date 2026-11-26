@@ -15,7 +15,7 @@ COLUMNS = {
 }
 
 
-def run(args):
+def run(args, *, announce=True):
     source = args.vcf.resolve(strict=True)
     samples = args.samples.resolve(strict=True)
     bed = args.bed.resolve(strict=True)
@@ -82,7 +82,8 @@ def run(args):
         table.writeheader()
         table.writerows(records)
     write_xlsx(output / "froh.xlsx", COLUMNS, records)
-    print(output / "froh.xlsx")
+    if announce:
+        print(output / "froh.xlsx")
 
 
 def main(argv):

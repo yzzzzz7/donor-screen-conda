@@ -208,6 +208,7 @@ def run(config_path, *, missense_policy=None):
         runner = admitted[1] if len(admitted)>1 else None
         reference_plan = min(by_group[reference],key=lambda r:(r["hbd"],order(r)))
         winner.update(cap=cap,eligible_count=len(admitted),possible_count=len(groups),reference_donors=list(reference),
+                      reference_pairs=reference_plan["pairs"],
                       reference_rare=reference_plan["rare"],reference_het=reference_plan["het"],
                       gain_over_reference=winner["rare"]-reference_plan["rare"],
                       runner_up=runner["donors"] if runner else [],runner_gap=winner["rare"]-runner["rare"] if runner else None)
@@ -246,7 +247,7 @@ def run(config_path, *, missense_policy=None):
             else:
                 winner=dict(k=k,donors=[],pairs=[],rare=None,hbd=None,het=None,r=None)
             winner.update(cap=cap,eligible_count=len(admitted4),possible_count=len(groups),
-                          reference_donors=list(reference),reference_rare=reference_plan["rare"],
+                          reference_donors=list(reference),reference_pairs=reference_plan["pairs"],reference_rare=reference_plan["rare"],
                           reference_het=reference_plan["het"],reference_r=reference_plan["r"])
             compare(winner,old,r_cap,policy)
             winner["min_r_for_original_score"]=minimum_r_for_original_score(

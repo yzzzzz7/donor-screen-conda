@@ -58,6 +58,14 @@ def run(args):
     annotation = (args.cds_sites or args.cds_panel)
     if annotation is not None:
         annotation = annotation.resolve(strict=True)
+    if args.froh_bed:
+        args.froh_bed = args.froh_bed.resolve(strict=True)
+        if not shutil.which("plink"):
+            raise ValueError("Predicted FROH requires PLINK 1.9")
+    elif args.froh_replicates != 100 or args.froh_seed != 50483 or args.froh_chr_set != 95:
+        raise ValueError("FROH settings require --froh-bed")
+    if args.froh_replicates < 2:
+        raise ValueError("--froh-replicates must be at least 2")
     if args.threads < 1:
         raise ValueError("--threads must be positive")
     with samples.open(encoding="utf-8-sig") as f:
@@ -197,7 +205,23 @@ def run(args):
         build_coding_pairs(panel, conf, out / "coding-pairs.tsv")
     build_panel(conf,joint)
     command(sys.executable,scripts/"screen.py",conf,"results.json","--csv","results.csv",label="screen.run")
-    write_report(out)
+    section = ""
+    if args.froh_bed:
+        from predict_roh import predict, report_section
+
+        output = out / "results.json"
+        data = json.loads(output.read_text(encoding="utf-8"))
+        summary = predict(data, vcf(out / "phased.vcf.gz", ids), ids, args.froh_bed,
+                          args.froh_chr_set, out / "04_predicted_froh",
+                          args.froh_replicates, args.froh_seed)
+        data["predicted_froh"] = dict(replicates_per_pair=args.froh_replicates,
+                                     seed=args.froh_seed, recombination_cm_per_mb=1,
+                                     chromosomes=chroms, plink_chr_set=args.froh_chr_set,
+                                     bed_sha256=hashlib.sha256(args.froh_bed.read_bytes()).hexdigest(),
+                                     plans=summary)
+        output.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+        section = report_section(summary, args.froh_replicates, args.froh_seed)
+    write_report(out, extra_section=section)
     print(out/"results.csv")
     print(out/"report.html")
 
@@ -215,6 +239,10 @@ def main():
     coding.add_argument("--cds-panel", type=Path, help="Curated CDS sites with recipient and donor ALT dosages")
     cli.add_argument("--r-policy", choices=("report", "reference", "baseline"),
                      help="Report R or apply the existing high-heterozygosity or no-introduction R limit")
+    cli.add_argument("--froh-bed", type=Path, help="Whole-autosome BED enabling predicted F1 FROH")
+    cli.add_argument("--froh-replicates", type=int, default=100, help="Simulated offspring per pair (default: 100)")
+    cli.add_argument("--froh-seed", type=int, default=50483, help="Reproducible FROH simulation seed")
+    cli.add_argument("--froh-chr-set", type=int, default=95, help="PLINK autosome count for the VCF (default: 95)")
     cli.add_argument("--offspring",type=int,choices=(1,2,3),default=3)
     cli.add_argument("--max-donors",type=int,choices=(1,2,3))
     cli.add_argument("--threads",type=int,default=4)
