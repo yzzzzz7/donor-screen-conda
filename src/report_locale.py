@@ -2,6 +2,18 @@
 import re
 
 ZH = {
+    'Selected plan profile': '入选供体及方案预测',
+    'Expected F1 SNP heterozygosity': '预计 F1 SNP 杂合率',
+    'Planned matings': '计划配对',
+    'Donor': '供体',
+    'Recipient': '受体',
+    'F1 slots': '计划 F1 数',
+    'Feasible donor combinations': '可行供体组合',
+    'Eligible / evaluated': '达标组合数 / 评估组合数',
+    'Total FROH': '总纯合片段覆盖率',
+    'Long FROH (>1 Mb)': '长纯合片段覆盖率（>1 Mb）',
+    'The selected plan shows expected distinct new rare alleles across its planned offspring. Recent HBD is a proportion; heterozygosity, R and FROH are percentages in the profile. An em dash indicates an unavailable or inapplicable value. The control introduces zero donors.': '预计新增稀有等位基因数按整个繁育方案去重。近期 HBD 用比例表示；方案图的杂合率、R 和纯合片段覆盖率用百分比表示。横线表示无相应数据。对照为不引入供体。',
+
     "Donor-screen report":"供体筛选报告",
     "Run":"运行",
     "Selection summary":"筛选汇总",

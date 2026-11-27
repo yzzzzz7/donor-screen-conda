@@ -25,7 +25,7 @@ jobs:
         shell: bash -el {0}
         run: |
           conda install -y -c conda-forge -c bioconda openpyxl
-          conda install -y -c https://raw.githubusercontent.com/yzzzzz7/donor-screen-conda/main -c conda-forge -c bioconda donor-screen=0.2.9
+          conda install -y -c https://raw.githubusercontent.com/yzzzzz7/donor-screen-conda/main -c conda-forge -c bioconda donor-screen=0.2.10
       - name: Run the documented synthetic example
         shell: bash -el {0}
         run: |
@@ -81,6 +81,13 @@ jobs:
           assert counts and set(counts.values()) == {50}
           html = (root / "report.html").read_text()
           assert 'id="chinese" lang="zh-CN" hidden' in html
+          from xml.etree import ElementTree as ET
+          profile = ET.parse(root / "01_selection/selected-plan-k2.svg").getroot()
+          assert set(selected["donors"]) <= {node.text for node in profile.iter()}
+          names = {node.text for node in ET.parse(root / "02_pairings/planned-matings-k2-1.svg").getroot().iter()}
+          assert all(pair["parent1"] in names and pair["parent2"] in names for pair in selected["pairs"])
+          assert "计划配对" in html and "Feasible donor combinations" in html
+          assert not (root / "01_selection/rare-alleles.svg").exists()
           PYTHON
       - name: Check the basic screen and observed ROH with the same VCF
         shell: bash -el {0}

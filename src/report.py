@@ -97,31 +97,103 @@ COMBINATIONS = {
 }
 
 
-def plot(title, rows, first, second, legend, percentage=False):
-    """Draw paired bars against a shared zero-based scale, including missing values."""
-    scale = 100 if percentage else 1
-    values = [(f'{r["k"]} donor(s)' if r["k"] else "Control", r.get(first), r.get(second)) for r in rows]
-    maximum = max((x for _, a, b in values for x in (a, b) if x is not None), default=0)
-    width = 760
-    height = 96 + 49 * len(values)
-    color = ("#245d91", "#be6c35")
-    svg = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}" role="img" aria-label="{escape(title)}">',
-           f'<rect width="{width}" height="{height}" fill="#fff"/>',
-           '<g font-family="system-ui,sans-serif" font-size="13" fill="#233245">',
-           f'<text x="16" y="25" font-size="17" font-weight="600">{escape(title)}</text>']
-    for i, name in enumerate(legend):
-        svg.append(f'<rect x="{16 + i * 230}" y="43" width="12" height="12" fill="{color[i]}"/>')
-        svg.append(f'<text x="{34 + i * 230}" y="54">{escape(name)}</text>')
-    for i, (name, *numbers) in enumerate(values):
-        y = 75 + i * 49
-        svg.append(f'<text x="16" y="{y + 20}">{escape(name)}</text>')
-        for j, number in enumerate(numbers):
-            ybar = y + j * 19
-            bar = 500 * number / maximum if maximum and number is not None else 0
-            shown = "—" if number is None else f"{number * scale:.6g}" + ("%" if percentage else "")
-            svg.append(f'<rect x="119" y="{ybar}" width="{bar:.3f}" height="13" fill="{color[j]}"/>')
-            svg.append(f'<text x="{124 + bar:.3f}" y="{ybar + 11}">{shown}</text>')
-    return "".join(svg) + "</g></svg>"
+def svg_text(x, y, value, *, size=14, bold=False, color="#1c3242", fit=None):
+    value = str(value)
+    length = ""
+    if fit and len(value) * size * 0.64 > fit:
+        length = f' textLength="{fit}" lengthAdjust="spacingAndGlyphs"'
+    weight = ' font-weight="650"' if bold else ""
+    return (f'<text x="{x}" y="{y}" font-size="{size}" fill="{color}"{weight}{length}>'
+            f'{escape(value)}</text>')
+
+
+def svg_frame(title, height, elements):
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 {height}" '
+            f'role="img" aria-label="{escape(title, quote=True)}"><title>{escape(title)}</title>'
+            f'<rect width="760" height="{height}" fill="white"/>'
+            '<g font-family="system-ui,sans-serif">' + "".join(elements) + '</g></svg>')
+
+
+def plan_profile(row, froh):
+    fields = [
+        ("Expected new rare alleles", row.get("rare"), False),
+        ("Expected F1 SNP heterozygosity", row.get("het"), True),
+        ("Predicted recent HBD", row.get("hbd"), False),
+        ("Predicted R", row.get("r"), True),
+        ("Total FROH", froh.get("total"), True),
+        ("Long FROH (>1 Mb)", froh.get("long"), True),
+    ]
+    title = "Selected plan profile"
+    parts = [svg_text(16, 27, title, size=19, bold=True),
+             svg_text(16, 53, f'{row["k"]} donor(s)')]
+    for i, donor in enumerate(row["donors"]):
+        parts.append(svg_text(16 + (i % 3)*247, 82 + (i//3)*28, donor, bold=True, fit=225))
+    names_height = ((len(row["donors"])+2)//3)*28 + 9
+    for i, (name, value, percentage) in enumerate(fields):
+        x, y = 16 + (i % 3) * 247, 74 + names_height + (i // 3) * 80
+        if value is None:
+            shown = "—"
+        elif percentage:
+            shown = f"{100 * value:.6g}%"
+        else:
+            shown = f"{value:,.6g}"
+        parts.extend([f'<rect x="{x}" y="{y}" width="234" height="68" rx="5" fill="#eff5f5"/>',
+                      svg_text(x+11, y+22, name, size=13),
+                      svg_text(x+11, y+51, shown, size=22, bold=True, color="#156861")])
+    return svg_frame(title, 233+names_height, parts)
+
+
+def assignment_chart(row, pairs, candidates):
+    title = "Planned matings"
+    parts = [svg_text(16, 26, title, size=19, bold=True),
+             svg_text(16, 53, f'{row["k"]} donor(s)'),
+             svg_text(16, 83, "Donor", bold=True), svg_text(339, 83, "Recipient", bold=True),
+             svg_text(638, 83, "F1 slots", bold=True)]
+    for i, pair in enumerate(pairs):
+        first, second = pair["parent1"], pair["parent2"]
+        donor, recipient = (first, second) if first in candidates else (second, first)
+        y = 108 + i * 36
+        parts.extend([f'<rect x="12" y="{y-17}" width="733" height="31" fill="{("#edf4f6" if i%2==0 else "#ffffff")}"/>',
+                      svg_text(20, y+4, donor, fit=218), svg_text(342, y+4, recipient, fit=238),
+                      f'<path d="M255 {y}h54m-6 -4 6 4-6 4" fill="none" stroke="#588a86"/>',
+                      svg_text(663, y+4, pair["n_offspring"], bold=True, color="#156861")])
+    return svg_frame(title, 104 + 36 * len(pairs), parts)
+
+
+def eligible_chart(rows):
+    title = "Feasible donor combinations"
+    parts = [svg_text(16, 27, title, size=19, bold=True),
+             svg_text(160, 54, "Eligible / evaluated", size=13)]
+    for i, row in enumerate(rows):
+        eligible, evaluated = row["eligible_count"], row["possible_count"]
+        y = 76 + i*32
+        parts.extend([svg_text(16, y+8, f'{row["k"]} donor(s)'),
+                      f'<rect x="160" y="{y-6}" width="415" height="15" fill="#e5eaec"/>',
+                      f'<rect x="160" y="{y-6}" width="{415*eligible/evaluated if evaluated else 0:.3f}" height="15" fill="#23796e"/>',
+                      svg_text(592, y+8, f"{eligible:,} / {evaluated:,}")])
+    return svg_frame(title, 72 + 32 * len(rows), parts)
+
+
+def write_screening_figures(out, data):
+    selected = [r for r in data["results"] if r["k"] and r.get("donors")]
+    graphics = defaultdict(list)
+    candidates = set(data["cohort"]["candidates"])
+    froh = {r["k"]: r for r in data.get("predicted_froh", {}).get("plans", []) if r["plan"] == "Selected"}
+    def save(folder, filename, image):
+        (out / folder / filename).write_text(image, encoding="utf-8")
+        graphics[folder].append(image)
+    for row in selected:
+        k = row["k"]
+        save("01_selection", f"selected-plan-k{k}.svg", plan_profile(row, froh.get(k, {})))
+        for offset in range(0, len(row["pairs"]), 16):
+            subset = row["pairs"][offset:offset+16]
+            save("02_pairings", f"planned-matings-k{k}-{offset//16+1}.svg",
+                 assignment_chart(row, subset, candidates))
+    budgets = [r for r in data["results"] if r["k"]]
+    if budgets:
+        save("03_combinations", "eligible-combinations.svg", eligible_chart(budgets))
+    return graphics
+
 
 
 def html_table(columns, rows):
@@ -191,24 +263,7 @@ def write_report(out, *, extra_section=""):
         (out / folder).mkdir()
         write_xlsx(out / folder / "results.xlsx", columns, rows)
 
-    plots = [
-        ("01_selection", "rare-alleles.svg", "Expected new rare alleles", "rare", "reference_rare",
-         ("Selected plan", "High-heterozygosity reference"), False),
-        ("01_selection", "offspring-heterozygosity.svg", "Predicted offspring heterozygosity", "het", "reference_het",
-         ("Selected plan", "High-heterozygosity reference"), True),
-        ("02_pairings", "recent-hbd.svg", "Mean predicted recent HBD across selected pairings", "hbd", "cap",
-         ("Selected plan", "HBD limit"), True),
-        ("03_combinations", "eligible-combinations.svg", "Candidate combinations", "eligible_count", "possible_count",
-         ("Eligible", "Evaluated"), False),
-    ]
-    if "missense_policy" in cohort:
-        plots.append(("01_selection", "missense-r.svg", "Predicted homozygous missense proportion R",
-                      "r", "reference_r", ("Selected plan", "High-heterozygosity reference"), True))
-    graphics = {}
-    for folder, filename, title, first, second, legend, percentage in plots:
-        image = plot(title, results, first, second, legend, percentage)
-        (out / folder / filename).write_text(image, encoding="utf-8")
-        graphics.setdefault(folder, []).append(image)
+    graphics = write_screening_figures(out, data)
 
     sections = []
     for folder, title, columns, rows in groups:
@@ -221,7 +276,7 @@ def write_report(out, *, extra_section=""):
         else:
             table = f"<p>{len(rows):,} candidate combinations evaluated. The workbook lists each combination.</p>"
         sections.append(f'<section><h2>{title}</h2><p><a href="{folder}/results.xlsx">Download Excel</a></p>'
-                        f'{table}{"".join(graphics[folder])}</section>')
+                        f'{"".join(graphics[folder])}{table}</section>')
     method = ""
     if "missense_policy" in cohort:
         rule = {
@@ -244,7 +299,7 @@ svg{{display:block;width:100%;max-width:760px;margin:12px 0}} a{{color:#245d91}}
 </style>
 <h1>Donor-screen report</h1><p>Run {escape(cohort["name"])} · {cohort["offspring_count"]} simulated F1 offspring per plan ·
 {len(cohort["recipients"])} recipients · {len(cohort["candidates"])} candidate donors</p>
-<p>Heterozygosity and HBD are proportions in the tables and percentages in the plots.
+<p>The selected plan shows expected distinct new rare alleles across its planned offspring. Recent HBD is a proportion; heterozygosity, R and FROH are percentages in the profile.
 An em dash indicates an unavailable or inapplicable value. The control introduces zero donors.</p>
 <p><a href="results.csv">Original results CSV</a> · <a href="results.json">Original results JSON</a></p>
 {method}{"".join(sections)}{extra_section}

@@ -33,3 +33,7 @@ Open `report.html` locally and use the **中文 / English** button to switch lan
 Each pairwise row includes the original signed KING kinship coefficient for the two parents. The run root also contains the complete native PLINK 2 `king.kin0` table. KING is included in PLINK 2; no separate KING installation is needed.
 
 KING is the first column of the pairwise workbook. The program retains the original selected and reference plan simulations and simulates the remaining recipient–donor pairs in deterministic batches. Run time increases with the number of pairs.
+
+### Reading the screening figures
+
+For each feasible nonzero donor budget, `01_selection/selected-plan-k*.svg` identifies the selected donors and reports expected distinct new rare alleles across the planned offspring, mean F1 SNP heterozygosity, recent HBD, R and optional FROH estimates. `02_pairings/planned-matings-k*.svg` links each donor to the assigned recipient and gives the number of planned F1. `03_combinations/eligible-combinations.svg` shows how many evaluated combinations passed the constraints. The HTML report embeds the figures. The Excel tables retain the high-heterozygosity reference and all pairwise estimates.

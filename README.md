@@ -4,11 +4,11 @@ Screen donor–recipient pairings for genetic rescue from a joint SNP VCF. The s
 
 ## Install on Linux
 
-The public Conda channel provides **donor-screen 0.2.9** for Linux x86-64. Run this in the Conda environment where you want to use the tool.
+The public Conda channel provides **donor-screen 0.2.10** for Linux x86-64. Run this in the Conda environment where you want to use the tool.
 
 ```bash
 conda install -c https://raw.githubusercontent.com/yzzzzz7/donor-screen-conda/main \
-  -c conda-forge -c bioconda donor-screen=0.2.9
+  -c conda-forge -c bioconda donor-screen=0.2.10
 donor-screen --help
 ```
 
@@ -16,7 +16,7 @@ Installation fetches PLINK, bcftools, Java and R dependencies, along with the re
 
 ## Copy-and-run synthetic example
 
-After installing donor-screen 0.2.9, run this command from the repository root. It uses one synthetic VCF and plans **2 donors and 3 F1 slots**, with **50 simulated F1 per pair** for FROH.
+After installing donor-screen 0.2.10, run this command from the repository root. It uses one synthetic VCF and plans **2 donors and 3 F1 slots**, with **50 simulated F1 per pair** for FROH.
 
 ```bash
 donor-screen test/input/synthetic-contrast.vcf.gz test/input/roles.tsv --froh-bed test/input/autosomes.bed --cds-sites test/input/synthetic-cds.tsv --froh-chr-set 1 -k 2 -n 3 -r 50 -t 2 --java-memory 2g --out demo-two-donors
@@ -66,3 +66,7 @@ Donor count and F1 slots both support values from 1 to 3, with donor count at mo
 | `04_predicted_froh/` | Optional total and long FROH predictions for comparing the selected plan, the high-heterozygosity reference and the no-introduction control |
 
 For FROH measured from sequenced individuals, use `donor-screen froh --help`.
+
+### Reading the screening figures
+
+For each feasible nonzero donor budget, `01_selection/selected-plan-k*.svg` identifies the selected donors and reports expected distinct new rare alleles across the planned offspring, mean F1 SNP heterozygosity, recent HBD, R and optional FROH estimates. `02_pairings/planned-matings-k*.svg` links each donor to the assigned recipient and gives the number of planned F1. `03_combinations/eligible-combinations.svg` shows how many evaluated combinations passed the constraints. The HTML report embeds the figures. The Excel tables retain the high-heterozygosity reference and all pairwise estimates.
